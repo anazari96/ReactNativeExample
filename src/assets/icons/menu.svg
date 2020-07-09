@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="22.661" height="22.661" viewBox="0 0 22.661 22.661">
+    <defs>
+        <style>
+            .prefix__cls-1{stroke-width:1.2px}
+        </style>
+    </defs>
+    <g id="prefix__menu_5_" data-name="menu (5)" transform="translate(.6 .6)">
+        <g id="prefix__Group_297" data-name="Group 297">
+            <g id="prefix__Group_296" data-name="Group 296">
+                <path id="prefix__Path_89" d="M9.08 0H.825A.825.825 0 0 0 0 .825V9.08a.825.825 0 0 0 .825.825H9.08a.825.825 0 0 0 .825-.825V.825A.825.825 0 0 0 9.08 0z" class="prefix__cls-1" data-name="Path 89"/>
+                <path id="prefix__Path_90" d="M155.365 0h-8.255a.825.825 0 0 0-.825.825V9.08a.825.825 0 0 0 .825.825h8.254a.825.825 0 0 0 .825-.825V.825a.825.825 0 0 0-.824-.825z" class="prefix__cls-1" data-name="Path 90" transform="translate(-134.729)"/>
+                <path id="prefix__Path_91" d="M9.08 146.286H.825a.825.825 0 0 0-.825.825v8.254a.825.825 0 0 0 .825.825H9.08a.825.825 0 0 0 .825-.825v-8.254a.825.825 0 0 0-.825-.825z" class="prefix__cls-1" data-name="Path 91" transform="translate(0 -134.73)"/>
+            </g>
+        </g>
+    </g>
+</svg>
