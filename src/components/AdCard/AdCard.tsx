@@ -1,65 +1,93 @@
 /* eslint-disable react-native/no-inline-styles */
-import React from 'react';
-import {View, Text, Image} from 'react-native';
-import {TouchableOpacity, FlatList} from 'react-native-gesture-handler';
-import {FastImage} from 'react-native-fast-image';
-import {persianDate} from '../../utils/persianDate';
+import React, {useMemo} from 'react';
+import {View, Text, StyleSheet} from 'react-native';
+import Swiper from 'react-native-swiper';
+import FastImage from 'react-native-fast-image';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+
+import {IAds} from '../../models/GeneralModels';
 import {MainColor} from '../../constants/variables';
+import {persianDate} from '../../utils/persianDate';
 import {persianNumber} from '../../utils/persianNumber';
+import {formatMoney} from '../../utils/formatMoney';
 
-interface IProps {
-  type: 'Card' | 'Land';
-  images: string[];
-  kindOfTransfer: 'sell' | 'rent';
-  kindOfHouse: 'villa' | 'apartment' | 'land';
-  area: number;
-  desc: string;
-  price: number;
-  date: Date;
-  location: string;
-  numberOfRoom: number;
-  isBookmarked: boolean;
-  isStared: boolean;
-}
+import BookmarkSVG from '../../assets/icons/bookmark.svg';
+import StarSVG from '../../assets/icons/star.svg';
 
-export const AdCard: React.FC<IProps> = (props) => {
+export const AdCard: React.FC<IAds> = (props) => {
+  const translateKindOfTransfer = (t?: 'sell' | 'rent') => {
+    switch (t) {
+      case 'sell':
+        return 'فروشی';
+      case 'rent':
+        return 'رهن و اجاره';
+    }
+    return '';
+  };
+
+  const translateKindOfHouse = (t?: 'apartment' | 'villa' | 'land') => {
+    switch (t) {
+      case 'apartment':
+        return 'آپارتمان';
+      case 'villa':
+        return 'ویلا';
+      case 'land':
+        return 'زمین';
+    }
+    return '';
+  };
+
+  const styles = useMemo(() => stylesFunc(props.type), [props.type]);
+
   return (
-    <View
-      style={{
-        backgroundColor: '#fff',
-        width: 237,
-        height: 280,
-        display: 'flex',
-        backfaceVisibility: 'hidden',
-        padding: 0,
-        borderRadius: 7,
-      }}>
-      <View style={{height: 140}}>
-        <FlatList
-          data={props.images}
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            borderTopRightRadius: 7,
-            borderTopLeftRadius: 7,
-          }}
-          renderItem={({item}) => (
-            <View>
-              <Image
-                style={{
-                  height: 140,
-                  width: 237,
-                  borderTopRightRadius: 7,
-                  borderTopLeftRadius: 7,
-                }}
-                source={require('../../assets/images/test.jpg')}
-              />
+    <View style={styles.container}>
+      <View style={styles.imageWrapper}>
+        <Swiper
+          style={styles.swiperWrapper}
+          showsButtons={false}
+          dotColor="#8b8b8b"
+          activeDotColor="#ffffff"
+          dot={
+            <View
+              style={{
+                backgroundColor: '#8b8b8b',
+                width: 21,
+                height: 3,
+                marginLeft: 2,
+                marginRight: 2,
+                marginBottom: -45,
+              }}
+            />
+          }
+          activeDot={
+            <View
+              style={{
+                backgroundColor: '#ffffff',
+                width: 21,
+                height: 3,
+                marginLeft: 2,
+                marginRight: 2,
+                marginBottom: -45,
+              }}
+            />
+          }>
+          {props.images.map((v: string, i: number) => (
+            <View style={{position: 'relative', paddingRight: 6}}>
+              <View style={styles.bookmarkStyle}>
+                <TouchableOpacity onPress={() => console.log('touch')}>
+                  <BookmarkSVG fill="rgba(0, 0, 0, 0.2)" stroke="#fff" />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.starStyle}>
+                <StarSVG fill="#ffff00" />
+              </View>
+              <FastImage style={styles.imageStyle} source={{uri: v}} key={i} />
             </View>
-          )}
-        />
+          ))}
+        </Swiper>
       </View>
 
-      <View style={{height: 140}}>
+      <View style={styles.descWrapper}>
         <View
           style={{
             height: 26,
@@ -70,7 +98,7 @@ export const AdCard: React.FC<IProps> = (props) => {
             backgroundColor: '#fafafa',
           }}>
           <Text style={{width: '33%', height: '100%', textAlign: 'center'}}>
-            {props.kindOfTransfer}
+            {translateKindOfTransfer(props.kindOfTransfer)}
           </Text>
           <Text
             style={{
@@ -81,10 +109,10 @@ export const AdCard: React.FC<IProps> = (props) => {
               borderRightWidth: 0.5,
               borderColor: 'rgba(87, 87, 87, 0.2)',
             }}>
-            {props.kindOfHouse}
+            {translateKindOfHouse(props.kindOfHouse)}
           </Text>
           <Text style={{width: '33%', height: '100%', textAlign: 'center'}}>
-            {props.area} متر
+            {persianNumber(props.area)} متر
           </Text>
         </View>
         <View
@@ -114,7 +142,7 @@ export const AdCard: React.FC<IProps> = (props) => {
           }}>
           <Text style={{color: MainColor, fontSize: 13}}>قیمت:</Text>
           <Text style={{color: MainColor, fontSize: 13}}>
-            {persianNumber(props.price)}
+            {persianNumber(formatMoney(props.price, 0, '.', '/'))}
           </Text>
           <Text style={{color: MainColor, fontSize: 13}}>تومان</Text>
         </View>
@@ -144,10 +172,66 @@ export const AdCard: React.FC<IProps> = (props) => {
             {props.location}
           </Text>
           <Text style={{width: '33%', height: '100%', textAlign: 'center'}}>
-            {props.numberOfRoom} خوابه
+            {persianNumber(props.numberOfRoom)} خوابه
           </Text>
         </View>
       </View>
     </View>
   );
+};
+
+const stylesFunc = (mode: 'Card' | 'Land') =>
+  StyleSheet.create({
+    swiperWrapper: {},
+    container:
+      mode === 'Card'
+        ? {
+            backgroundColor: '#fff',
+            width: 237,
+            height: 280,
+            display: 'flex',
+            backfaceVisibility: 'hidden',
+            padding: 0,
+            borderRadius: 7,
+          }
+        : {
+            backgroundColor: '#fff',
+            width: '100%',
+            height: 140,
+            display: 'flex',
+            flexDirection: 'row',
+            backfaceVisibility: 'hidden',
+            padding: 0,
+          },
+    imageWrapper:
+      mode === 'Card'
+        ? {height: '50%'}
+        : {height: '100%', flex: 1, paddingVertical: 9, paddingHorizontal: 6},
+    imageStyle:
+      mode === 'Card'
+        ? {
+            height: 140,
+            width: '100%',
+            borderTopRightRadius: 7,
+            borderTopLeftRadius: 7,
+          }
+        : {
+            height: '100%',
+            width: '100%',
+            borderRadius: 7,
+          },
+    descWrapper:
+      mode === 'Card' ? {height: '50%'} : {height: '100%', width: '63.8%'},
+    bookmarkStyle:
+      mode === 'Card'
+        ? {position: 'absolute', top: 0, right: 18, zIndex: 100}
+        : {position: 'absolute', top: 0, left: 18, zIndex: 100},
+    starStyle:
+      mode === 'Card'
+        ? {position: 'absolute', top: 0, left: 18, zIndex: 100}
+        : {position: 'absolute', top: 0, right: 18, zIndex: 100},
+  });
+
+AdCard.defaultProps = {
+  type: 'Card',
 };
