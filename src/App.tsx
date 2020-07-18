@@ -9,6 +9,7 @@ import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {store} from './redux/store';
 
 import FeedScreen from './screens/FeedScreen';
+import {ExploreScreen} from './screens/ExploreScreen/ExploreScreen';
 
 import FolderSVG from './assets/icons/folder.svg';
 import PinSVG from './assets/icons/pin.svg';
@@ -111,7 +112,7 @@ export default function App() {
             <Tab.Screen
               name="Explore"
               options={{title: 'معرفی'}}
-              component={FeedScreen}
+              component={ExploreScreen}
             />
             <Tab.Screen
               name="CreateAds"

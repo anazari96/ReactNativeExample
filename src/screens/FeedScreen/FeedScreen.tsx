@@ -1,9 +1,10 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState, useCallback, useEffect} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {View, StyleSheet, Picker, ScrollView} from 'react-native';
+import {View, StyleSheet, ScrollView} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {TextInput} from 'react-native-gesture-handler';
+import {Picker} from '@react-native-community/picker';
 import {FeedAds} from '../../containers/FeedAds/FeedAds';
 // import {api} from 'src/utils/api';
 import {getAdsAction} from '../../redux/actions/AdsActions/adsActions';
