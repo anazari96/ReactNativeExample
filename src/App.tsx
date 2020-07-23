@@ -17,6 +17,7 @@ import LocationSVG from './assets/icons/location.svg';
 import MenuSVG from './assets/icons/menu.svg';
 import UserSVG from './assets/icons/users-cog.svg';
 import {MainColor, StrokeColor} from './constants/variables';
+import MyAdsScreen from './screens/MyAdsScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -105,8 +106,18 @@ export default function App() {
               tabStyle: {padding: 2},
             }}>
             <Tab.Screen
-              name="Profile"
-              options={{title: 'پروفایل'}}
+              name="Feed"
+              options={{title: 'مشهد'}}
+              component={FeedScreen}
+            />
+            <Tab.Screen
+              name="MyAds"
+              options={{title: 'آگهی های من'}}
+              component={MyAdsScreen}
+            />
+            <Tab.Screen
+              name="CreateAds"
+              options={{title: 'ثبت آگهی'}}
               component={FeedScreen}
             />
             <Tab.Screen
@@ -115,18 +126,8 @@ export default function App() {
               component={ExploreScreen}
             />
             <Tab.Screen
-              name="CreateAds"
-              options={{title: 'ثبت آگهی'}}
-              component={FeedScreen}
-            />
-            <Tab.Screen
-              name="MyAds"
-              options={{title: 'آگهی های من'}}
-              component={FeedScreen}
-            />
-            <Tab.Screen
-              name="Feed"
-              options={{title: 'مشهد'}}
+              name="Profile"
+              options={{title: 'پروفایل'}}
               component={FeedScreen}
             />
           </Tab.Navigator>

@@ -4,8 +4,6 @@ import {View, StyleSheet, Dimensions} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import {AdCard} from '../AdCard/AdCard';
 
-var {width, height} = Dimensions.get('window');
-
 interface IProps {
   markers?: {
     id: number;
