@@ -27,8 +27,8 @@ export const ExploreScreen: React.FC = (props) => {
     {
       id: 123,
       cord: {
-        latitude: 37.2,
-        longitude: -122.085,
+        latitude: 36.22,
+        longitude: 59.585,
         latitudeDelta: 0.015,
         longitudeDelta: 0.025,
       },
@@ -38,8 +38,8 @@ export const ExploreScreen: React.FC = (props) => {
     {
       id: 1237,
       cord: {
-        latitude: 37.32,
-        longitude: -122.085,
+        latitude: 36.2,
+        longitude: 59.5185,
         latitudeDelta: 0.015,
         longitudeDelta: 0.025,
       },
@@ -49,8 +49,8 @@ export const ExploreScreen: React.FC = (props) => {
     {
       id: 13,
       cord: {
-        latitude: 37.2,
-        longitude: -122.055,
+        latitude: 36.29,
+        longitude: 59.4585,
         latitudeDelta: 0.015,
         longitudeDelta: 0.025,
       },
@@ -60,8 +60,8 @@ export const ExploreScreen: React.FC = (props) => {
     {
       id: 12366,
       cord: {
-        latitude: 37.27,
-        longitude: -122.045,
+        latitude: 36.32,
+        longitude: 59.3585,
         latitudeDelta: 0.015,
         longitudeDelta: 0.025,
       },
@@ -83,11 +83,14 @@ export const ExploreScreen: React.FC = (props) => {
   return (
     <View>
       <MapView
-        markers={ads.toArray().map((v) => {
-          const t = markers[Math.floor(Math.random() * 4)];
-          t.ad = v;
-          return t;
-        })}
+        markers={ads
+          .toSet()
+          .map((v) => {
+            const t = markers[Math.floor(Math.random() * 4)];
+            t.ad = v;
+            return t;
+          })
+          .toArray()}
       />
       {/* <AdCard {} type="Land" /> */}
     </View>

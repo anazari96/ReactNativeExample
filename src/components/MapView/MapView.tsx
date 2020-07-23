@@ -1,7 +1,10 @@
 import React, {useState, useEffect} from 'react';
-import MV, {PROVIDER_GOOGLE, Marker, Region} from 'react-native-maps';
-import {View, StyleSheet} from 'react-native';
+import MV, {PROVIDER_GOOGLE, Region, Marker} from 'react-native-maps';
+import {View, StyleSheet, Dimensions} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
+import {AdCard} from '../AdCard/AdCard';
+
+var {width, height} = Dimensions.get('window');
 
 interface IProps {
   markers?: {
@@ -18,17 +21,30 @@ const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
     height: '100%',
-    width: 400,
+    width: '100%',
+    display: 'flex',
     justifyContent: 'flex-end',
     alignItems: 'center',
+    position: 'relative',
   },
   map: {
     ...StyleSheet.absoluteFillObject,
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  previewMarkerWrapper: {
+    position: 'absolute',
+    bottom: 10,
+    left: 0,
+    right: 0,
+    width: '100%',
   },
 });
 
 export const MapView: React.FC<IProps> = (props) => {
   const [myLoc, setMyLoc] = useState<Region | undefined>();
+  const [previewMarker, setPreviewMarker] = useState<any>();
 
   useEffect(() => {
     if (props.startRegion) {
@@ -36,6 +52,8 @@ export const MapView: React.FC<IProps> = (props) => {
     } else {
       Geolocation.getCurrentPosition(
         (position) => {
+          console.log('position', position);
+
           setMyLoc({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
@@ -59,7 +77,24 @@ export const MapView: React.FC<IProps> = (props) => {
 
   return (
     <View style={styles.container}>
-      <MV provider={PROVIDER_GOOGLE} style={styles.map} region={myLoc}>
+      <MV
+        showsUserLocation={true}
+        showsMyLocationButton={true}
+        zoomEnabled={true}
+        provider={PROVIDER_GOOGLE}
+        style={styles.map}
+        onPress={(e) => {
+          if (previewMarker) {
+            setPreviewMarker(undefined);
+          }
+        }}
+        onPanDrag={(e) => {
+          if (previewMarker) {
+            setPreviewMarker(undefined);
+          }
+        }}
+        // region={myLoc}>
+        initialRegion={myLoc}>
         {props.markers?.map((v) => (
           <Marker
             identifier={`${v.id}`}
@@ -67,11 +102,14 @@ export const MapView: React.FC<IProps> = (props) => {
             title={v.title}
             description={v.desc}
             onPress={(e) => {
-              console.log('hereee', e);
+              setPreviewMarker(v.ad?.toJS());
             }}
           />
         ))}
       </MV>
+      <View style={styles.previewMarkerWrapper}>
+        {previewMarker && <AdCard {...previewMarker} type="Land" />}
+      </View>
     </View>
   );
 };
