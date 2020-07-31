@@ -1,12 +1,12 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState, useCallback, useEffect} from 'react';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {View, StyleSheet, ScrollView} from 'react-native';
 import {useDispatch} from 'react-redux';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {TextInput} from 'react-native-gesture-handler';
 import {Picker} from '@react-native-community/picker';
+
 import {FeedAds} from '../../containers/FeedAds/FeedAds';
-// import {api} from 'src/utils/api';
 import {getAdsAction} from '../../redux/actions/AdsActions/adsActions';
 import {IAds} from '../../models/GeneralModels';
 import {AdCard} from '../../components/AdCard/AdCard';
@@ -196,8 +196,7 @@ export const FeedScreen: React.FC<IProps> = (props) => {
           paddingHorizontal: 6,
         }}>
         {/* first row of filters */}
-        <View
-          style={{flexDirection: 'row-reverse', height: 28, marginBottom: 5}}>
+        <View style={{flexDirection: 'row', height: 28, marginBottom: 5}}>
           {/* kind of ad: sell or rent */}
           <Picker
             selectedValue={kindOfAd}
@@ -219,7 +218,7 @@ export const FeedScreen: React.FC<IProps> = (props) => {
               textAlignVertical: 'center',
               fontSize: 15,
               padding: 0,
-              paddingRight: 5,
+              paddingLeft: 5,
             }}
           />
         </View>

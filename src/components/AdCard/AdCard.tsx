@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useMemo} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import React, {useMemo, useState} from 'react';
+import {View, Text, StyleSheet, TouchableWithoutFeedback} from 'react-native';
 import Swiper from 'react-native-swiper';
 import FastImage from 'react-native-fast-image';
 import {TouchableOpacity} from 'react-native-gesture-handler';
@@ -14,7 +14,15 @@ import {formatMoney} from '../../utils/formatMoney';
 import BookmarkSVG from '../../assets/icons/bookmark.svg';
 import StarSVG from '../../assets/icons/star.svg';
 
-export const AdCard: React.FC<IAds> = (props) => {
+export const AdCard: React.FC<
+  IAds & {
+    contentOffset?: number;
+    setScrollEnabled?: Function;
+    scrollEnabled?: boolean;
+  }
+> = (props) => {
+  const [enableScrollViewScroll, setEnableScrollViewScroll] = useState(true);
+
   const translateKindOfTransfer = (t?: 'sell' | 'rent') => {
     switch (t) {
       case 'sell':
@@ -41,12 +49,26 @@ export const AdCard: React.FC<IAds> = (props) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.imageWrapper}>
+      <View
+        style={styles.imageWrapper}
+        onStartShouldSetResponder={() => {
+          props.setScrollEnabled?.(false);
+          if (props.scrollEnabled === false) {
+            props?.setScrollEnabled?.(true);
+          }
+          return true;
+        }}>
         <Swiper
-          style={styles.swiperWrapper}
+          // style={styles.swiperWrapper}
           showsButtons={false}
+          directionalLockEnabled={true}
+          disableScrollViewPanResponder={true}
           dotColor="#8b8b8b"
           activeDotColor="#ffffff"
+          loop={true}
+          onScroll={() => {
+            console.log('kjknkjbbhjgc');
+          }}
           dot={
             <View
               style={{
@@ -72,7 +94,7 @@ export const AdCard: React.FC<IAds> = (props) => {
             />
           }>
           {props.images.map((v: string, i: number) => (
-            <View style={{position: 'relative', paddingRight: 6}}>
+            <View style={{position: 'relative', paddingRight: 6}} key={v + i}>
               <View style={styles.bookmarkStyle}>
                 <TouchableOpacity onPress={() => console.log('touch')}>
                   <BookmarkSVG fill="rgba(0, 0, 0, 0.2)" stroke="#fff" />
@@ -94,7 +116,7 @@ export const AdCard: React.FC<IAds> = (props) => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-evenly',
-            flexDirection: 'row-reverse',
+            flexDirection: 'row',
             backgroundColor: '#fafafa',
           }}>
           <Text style={{width: '33%', height: '100%', textAlign: 'center'}}>
@@ -152,7 +174,7 @@ export const AdCard: React.FC<IAds> = (props) => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-around',
-            flexDirection: 'row-reverse',
+            flexDirection: 'row',
             backgroundColor: '#fafafa',
             borderBottomRightRadius: 7,
             borderBottomLeftRadius: 7,
@@ -182,7 +204,6 @@ export const AdCard: React.FC<IAds> = (props) => {
 
 const stylesFunc = (mode: 'Card' | 'Land') =>
   StyleSheet.create({
-    swiperWrapper: {},
     container:
       mode === 'Card'
         ? {
@@ -199,13 +220,15 @@ const stylesFunc = (mode: 'Card' | 'Land') =>
             width: '100%',
             height: 140,
             display: 'flex',
-            flexDirection: 'row',
+            flexDirection: 'row-reverse',
             backfaceVisibility: 'hidden',
             padding: 0,
+            shadowColor: 'rgba(0, 0, 0, 0.5)',
+            marginVertical: 4.5,
           },
     imageWrapper:
       mode === 'Card'
-        ? {height: '50%'}
+        ? {height: '50%', width: '100%'}
         : {height: '100%', flex: 1, paddingVertical: 9, paddingHorizontal: 6},
     imageStyle:
       mode === 'Card'
@@ -220,8 +243,11 @@ const stylesFunc = (mode: 'Card' | 'Land') =>
             width: '100%',
             borderRadius: 7,
           },
-    descWrapper:
-      mode === 'Card' ? {height: '50%'} : {height: '100%', width: '63.8%'},
+    descWrapper: {
+      ...(mode === 'Card' ? {height: '50%'} : {height: '100%', width: '63.8%'}),
+      // display: 'flex',
+      // flexDirection: 'row-reverse',
+    },
     bookmarkStyle:
       mode === 'Card'
         ? {position: 'absolute', top: 0, right: 18, zIndex: 100}

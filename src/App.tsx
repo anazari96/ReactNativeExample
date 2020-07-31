@@ -7,17 +7,21 @@ import {SafeAreaProvider} from 'react-native-safe-area-context';
 // import Ionicons from 'react-native-vector-icons/Ionicons';
 // import Svg, {Use, Image} from 'react-native-svg';
 import {store} from './redux/store';
+import {MainColor, StrokeColor} from './constants/variables';
+import {typography} from './utils/typography';
 
 import FeedScreen from './screens/FeedScreen';
-import {ExploreScreen} from './screens/ExploreScreen/ExploreScreen';
+import ExploreScreen from './screens/ExploreScreen';
+import MyAdsScreen from './screens/MyAdsScreen';
+import CreateAdsScreen from './screens/CreateAdsScreen';
 
 import FolderSVG from './assets/icons/folder.svg';
 import PinSVG from './assets/icons/pin.svg';
 import LocationSVG from './assets/icons/location.svg';
 import MenuSVG from './assets/icons/menu.svg';
 import UserSVG from './assets/icons/users-cog.svg';
-import {MainColor, StrokeColor} from './constants/variables';
-import MyAdsScreen from './screens/MyAdsScreen';
+
+typography();
 
 const Tab = createBottomTabNavigator();
 
@@ -29,8 +33,6 @@ export default function App() {
           <Tab.Navigator
             screenOptions={({route}) => ({
               tabBarIcon: ({focused}) => {
-                console.log('route', route);
-
                 switch (route.name) {
                   case 'Feed':
                     return (
@@ -118,7 +120,7 @@ export default function App() {
             <Tab.Screen
               name="CreateAds"
               options={{title: 'ثبت آگهی'}}
-              component={FeedScreen}
+              component={CreateAdsScreen}
             />
             <Tab.Screen
               name="Explore"

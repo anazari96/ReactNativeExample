@@ -13,6 +13,8 @@ interface IProps {
     ad?: any;
   }[];
   startRegion?: Region;
+  showUserLocation?: boolean;
+  zoomEnabled?: boolean;
 }
 
 const styles = StyleSheet.create({
@@ -76,9 +78,9 @@ export const MapView: React.FC<IProps> = (props) => {
   return (
     <View style={styles.container}>
       <MV
-        showsUserLocation={true}
-        showsMyLocationButton={true}
-        zoomEnabled={true}
+        showsUserLocation={props.showUserLocation || true}
+        showsMyLocationButton={false}
+        zoomEnabled={props.zoomEnabled || true}
         provider={PROVIDER_GOOGLE}
         style={styles.map}
         onPress={(e) => {
@@ -91,7 +93,10 @@ export const MapView: React.FC<IProps> = (props) => {
             setPreviewMarker(undefined);
           }
         }}
-        // region={myLoc}>
+        onLongPress={(e) => {
+          console.log('longpress', e);
+        }}
+        // region={myLoc}
         initialRegion={myLoc}>
         {props.markers?.map((v) => (
           <Marker

@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react';
+import React, {useMemo, useRef, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {useSelector} from 'react-redux';
 import {FlatList} from 'react-native-gesture-handler';
@@ -15,22 +15,30 @@ export const FeedAds: React.FC<IProps> = (props) => {
   const ads: OrderedMap<string, IAds> = useSelector((state: any) =>
     state.get('adsReducer'),
   );
-
+  const refFlatList = useRef<any>();
   const styles = useMemo(() => stylesFunc(props.mode), [props.mode]);
+  const [scrollEnabled, setScrollEnabled] = useState(true);
 
   return props.mode === 'Card' ? (
     <View style={styles.container}>
       <FlatList
         style={{display: 'flex'}}
         horizontal={true}
-        inverted={true}
-        ItemSeparatorComponent={() => (
-          <View style={{marginHorizontal: 4.5}}></View>
-        )}
+        inverted={false}
+        ItemSeparatorComponent={() => <View style={{marginHorizontal: 4.5}} />}
         data={ads?.toArray()?.map((v) => v[1]?.toJS())}
         renderItem={({item}) => (
-          <AdCard {...item} type={props.mode} key={item.id} />
+          <AdCard
+            {...item}
+            type={props.mode}
+            key={item.id}
+            contentOffset={refFlatList?.current?.contentOffset}
+            setScrollEnabled={setScrollEnabled}
+            scrollEnabled={scrollEnabled}
+          />
         )}
+        ref={refFlatList}
+        scrollEnabled={scrollEnabled}
       />
     </View>
   ) : (

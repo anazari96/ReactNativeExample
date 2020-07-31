@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="4.703" height="14.111" viewBox="0 0 4.703 14.111">
+    <defs>
+        <style>
+            .cls-1{fill:#707070}
+        </style>
+    </defs>
+    <g id="warning" transform="translate(-7.967 -2.516)">
+        <g id="Group_316" data-name="Group 316" transform="translate(8.555 13.099)">
+            <g id="Group_315" data-name="Group 315">
+                <path id="Path_309" d="M215.1 256a1.764 1.764 0 1 0 1.764 1.764A1.766 1.766 0 0 0 215.1 256zm0 2.352a.588.588 0 1 1 .588-.588.589.589 0 0 1-.588.588z" class="cls-1" data-name="Path 309" transform="translate(-213.333 -256)"/>
+            </g>
+        </g>
+        <g id="Group_318" data-name="Group 318" transform="translate(7.967 2.516)">
+            <g id="Group_317" data-name="Group 317">
+                <path id="Path_310" d="M206.9 64.562a1.769 1.769 0 0 0-1.286-.562h-1.176a1.766 1.766 0 0 0-1.759 1.9l.5 5.794a1.85 1.85 0 0 0 3.69.009l.507-5.812a1.766 1.766 0 0 0-.476-1.329zm-.7 1.235l-.508 5.813a.675.675 0 0 1-1.346-.009l-.5-5.794a.58.58 0 0 1 .156-.443.586.586 0 0 1 .43-.187h1.176a.586.586 0 0 1 .43.187.577.577 0 0 1 .162.436z" class="cls-1" data-name="Path 310" transform="translate(-202.674 -64)"/>
+            </g>
+        </g>
+    </g>
+</svg>
