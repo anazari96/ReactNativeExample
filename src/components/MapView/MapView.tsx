@@ -1,8 +1,10 @@
 import React, {useState, useEffect} from 'react';
 import MV, {PROVIDER_GOOGLE, Region, Marker} from 'react-native-maps';
-import {View, StyleSheet, Dimensions} from 'react-native';
+import {View, StyleSheet, TouchableOpacity} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
-import {AdCard} from '../AdCard/AdCard';
+
+import {AdCard} from 'components/AdCard/AdCard';
+import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 
 interface IProps {
   markers?: {
@@ -15,6 +17,7 @@ interface IProps {
   startRegion?: Region;
   showUserLocation?: boolean;
   zoomEnabled?: boolean;
+  selectLocationEnabled?: boolean;
 }
 
 const styles = StyleSheet.create({
@@ -52,8 +55,6 @@ export const MapView: React.FC<IProps> = (props) => {
     } else {
       Geolocation.getCurrentPosition(
         (position) => {
-          console.log('position', position);
-
           setMyLoc({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
@@ -83,19 +84,22 @@ export const MapView: React.FC<IProps> = (props) => {
         zoomEnabled={props.zoomEnabled || true}
         provider={PROVIDER_GOOGLE}
         style={styles.map}
-        onPress={(e) => {
+        onPress={() => {
           if (previewMarker) {
             setPreviewMarker(undefined);
           }
         }}
-        onPanDrag={(e) => {
+        onPanDrag={() => {
           if (previewMarker) {
             setPreviewMarker(undefined);
           }
         }}
         onLongPress={(e) => {
-          console.log('longpress', e);
+          if (props.selectLocationEnabled) {
+            console.log('longpress', e);
+          }
         }}
+        // cacheEnabled={true}
         // region={myLoc}
         initialRegion={myLoc}>
         {props.markers?.map((v) => (
@@ -110,6 +114,7 @@ export const MapView: React.FC<IProps> = (props) => {
           />
         ))}
       </MV>
+
       <View style={styles.previewMarkerWrapper}>
         {previewMarker && <AdCard {...previewMarker} type="Land" />}
       </View>

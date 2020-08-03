@@ -3,18 +3,32 @@ export interface IAction {
   payload: any;
 }
 
+export interface IUser {
+  id: string;
+  first_name: string;
+  last_name: string;
+  phone: string;
+}
+
 export interface IAds {
   id: string;
+  code: string | null;
   type: 'Card' | 'Land';
+  name: string;
   images: string[];
-  kindOfTransfer: 'sell' | 'rent';
-  kindOfHouse: 'villa' | 'apartment' | 'land';
+  post_type: 'SELL' | 'RENT';
+  property_type: 'HOUSE' | 'APARTMENT';
   area: number;
   desc: string;
   price: number;
-  date: Date;
-  location: string;
-  numberOfRoom: number;
+  price2: number;
+  distinct: string;
+  rooms: number;
   isBookmarked: boolean;
   isStared: boolean;
+  created: Date;
+  neighbourhood: string;
+  options: any;
+  user: IUser;
+  visit_time: any;
 }

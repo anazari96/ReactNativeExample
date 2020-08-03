@@ -1,15 +1,13 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState, useCallback, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, StyleSheet, ScrollView} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {TextInput} from 'react-native-gesture-handler';
 import {Picker} from '@react-native-community/picker';
 
-import {FeedAds} from '../../containers/FeedAds/FeedAds';
-import {getAdsAction} from '../../redux/actions/AdsActions/adsActions';
-import {IAds} from '../../models/GeneralModels';
-import {AdCard} from '../../components/AdCard/AdCard';
+import {FeedAds} from 'containers/FeedAds/FeedAds';
+import {getFeedAction} from 'redux/actions/feedAction';
 
 interface IProps {}
 
@@ -17,166 +15,9 @@ export const FeedScreen: React.FC<IProps> = (props) => {
   const [kindOfAd, setKindOfAd] = useState<'sell' | 'rent' | undefined>();
   const dispatch = useDispatch();
 
-  const v = [
-    {
-      area: 150,
-      date: new Date(),
-      desc: 'توضیحاااات ',
-      id: '123',
-      images: [
-        'https://unsplash.com/photos/4TBSG2Oqu0Q/download?force=true&w=640',
-        'https://unsplash.com/photos/VuatLT0MkQE/download?force=true&w=640',
-        'https://unsplash.com/photos/FytRPOMijMA/download?force=true&w=640',
-      ],
-      isBookmarked: true,
-      isStared: false,
-      kindOfHouse: 'land',
-      kindOfTransfer: 'sell',
-      location: 'هاشمیه',
-      numberOfRoom: 5,
-      price: 10000000,
-    },
-    {
-      area: 250,
-      date: new Date(),
-      desc: '123546546توضیحاااات ',
-      id: '12358',
-      images: [
-        'https://unsplash.com/photos/4TBSG2Oqu0Q/download?force=true&w=640',
-        'https://unsplash.com/photos/VuatLT0MkQE/download?force=true&w=640',
-        'https://unsplash.com/photos/FytRPOMijMA/download?force=true&w=640',
-      ],
-      isBookmarked: true,
-      isStared: true,
-      kindOfHouse: 'villa',
-      kindOfTransfer: 'rent',
-      location: 'هاشمیه 22',
-      numberOfRoom: 3,
-      price: 10705100,
-    },
-    {
-      area: 150,
-      date: new Date(),
-      desc: 'توضیحاااات ',
-      id: '12443',
-      images: [
-        'https://unsplash.com/photos/4TBSG2Oqu0Q/download?force=true&w=640',
-        'https://unsplash.com/photos/VuatLT0MkQE/download?force=true&w=640',
-        'https://unsplash.com/photos/FytRPOMijMA/download?force=true&w=640',
-      ],
-      isBookmarked: true,
-      isStared: false,
-      kindOfHouse: 'land',
-      kindOfTransfer: 'sell',
-      location: 'هاشمیه',
-      numberOfRoom: 5,
-      price: 10000000,
-    },
-    {
-      area: 250,
-      date: new Date(),
-      desc: '123546546توضیحاااات ',
-      id: '1235558',
-      images: [
-        'https://unsplash.com/photos/4TBSG2Oqu0Q/download?force=true&w=640',
-        'https://unsplash.com/photos/VuatLT0MkQE/download?force=true&w=640',
-        'https://unsplash.com/photos/FytRPOMijMA/download?force=true&w=640',
-      ],
-      isBookmarked: true,
-      isStared: true,
-      kindOfHouse: 'villa',
-      kindOfTransfer: 'rent',
-      location: 'هاشمیه 22',
-      numberOfRoom: 3,
-      price: 10705100,
-    },
-    {
-      area: 150,
-      date: new Date(),
-      desc: 'توضیحاااات ',
-      id: '1221233',
-      images: [
-        'https://unsplash.com/photos/4TBSG2Oqu0Q/download?force=true&w=640',
-        'https://unsplash.com/photos/VuatLT0MkQE/download?force=true&w=640',
-        'https://unsplash.com/photos/FytRPOMijMA/download?force=true&w=640',
-      ],
-      isBookmarked: true,
-      isStared: false,
-      kindOfHouse: 'land',
-      kindOfTransfer: 'sell',
-      location: 'هاشمیه',
-      numberOfRoom: 5,
-      price: 10000000,
-    },
-    {
-      area: 250,
-      date: new Date(),
-      desc: '123546546توضیحاااات ',
-      id: '124343358',
-      images: [
-        'https://unsplash.com/photos/4TBSG2Oqu0Q/download?force=true&w=640',
-        'https://unsplash.com/photos/VuatLT0MkQE/download?force=true&w=640',
-        'https://unsplash.com/photos/FytRPOMijMA/download?force=true&w=640',
-      ],
-      isBookmarked: true,
-      isStared: true,
-      kindOfHouse: 'villa',
-      kindOfTransfer: 'rent',
-      location: 'هاشمیه 22',
-      numberOfRoom: 3,
-      price: 10705100,
-    },
-    {
-      area: 150,
-      date: new Date(),
-      desc: 'توضیحاااات ',
-      id: '129093',
-      images: [
-        'https://unsplash.com/photos/4TBSG2Oqu0Q/download?force=true&w=640',
-        'https://unsplash.com/photos/VuatLT0MkQE/download?force=true&w=640',
-        'https://unsplash.com/photos/FytRPOMijMA/download?force=true&w=640',
-      ],
-      isBookmarked: true,
-      isStared: false,
-      kindOfHouse: 'land',
-      kindOfTransfer: 'sell',
-      location: 'هاشمیه',
-      numberOfRoom: 5,
-      price: 10000000,
-    },
-    {
-      area: 250,
-      date: new Date(),
-      desc: '123546546توضیحاااات ',
-      id: '12312358',
-      images: [
-        'https://unsplash.com/photos/4TBSG2Oqu0Q/download?force=true&w=640',
-        'https://unsplash.com/photos/VuatLT0MkQE/download?force=true&w=640',
-        'https://unsplash.com/photos/FytRPOMijMA/download?force=true&w=640',
-      ],
-      isBookmarked: true,
-      isStared: true,
-      kindOfHouse: 'villa',
-      kindOfTransfer: 'rent',
-      location: 'هاشمیه 22',
-      numberOfRoom: 3,
-      price: 10705100,
-    },
-  ];
-
-  const getAds = useCallback(() => {
-    // api.get('').then((v) => {
-    //   if (v.ok) {
-    //     dispatch(getAdsAction(v.data as IAds[]));
-    //   }
-    // });
-
-    dispatch(getAdsAction(v as IAds[]));
-  }, [dispatch]);
-
   useEffect(() => {
-    getAds();
-  }, [getAds]);
+    dispatch(getFeedAction());
+  }, [dispatch]);
 
   return (
     <SafeAreaView

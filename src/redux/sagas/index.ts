@@ -1,6 +1,6 @@
 import {all, fork} from 'redux-saga/effects';
-import {fetchFeed} from './getFeed';
+import fetchFeedSaga from './getFeed';
 
 export default function* rootSaga() {
-  yield all([fork(fetchFeed)]);
+  yield all([fork(fetchFeedSaga)]);
 }

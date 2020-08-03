@@ -28,4 +28,5 @@ const pd = (d: number) => {
   return `${diff} سال پیش`;
 };
 
-export const persianDate = (d: number) => persianNumber(pd(d));
+export const persianDate = (d: number | undefined) =>
+  d ? persianNumber(pd(d)) : null;

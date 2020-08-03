@@ -10,6 +10,7 @@ import FastImage from 'react-native-fast-image';
 
 import SaleSVG from '../../assets/icons/sale.svg';
 import ForkSVG from '../../assets/icons/fork.svg';
+import {useNavigation} from '@react-navigation/native';
 
 var {width} = Dimensions.get('window');
 
@@ -56,6 +57,7 @@ const styles = StyleSheet.create({
 });
 
 export const Category: React.FC<IProps> = (props) => {
+  const navigation = useNavigation();
   return (
     <View style={[styles.container, {width: `${100 / parseInt(width / 99)}%`}]}>
       <View style={[styles.iconWrapper, {backgroundColor: props.color}]}>
@@ -64,7 +66,10 @@ export const Category: React.FC<IProps> = (props) => {
             <SaleSVG />
           </View>
         )}
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('MyModal');
+          }}>
           {/* <FastImage source={{uri: }} /> */}
           <ForkSVG />
         </TouchableOpacity>

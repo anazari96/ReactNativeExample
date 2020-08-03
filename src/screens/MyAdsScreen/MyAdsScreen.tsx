@@ -1,7 +1,7 @@
 import React from 'react';
-import {MapView} from '../../components/MapView/MapView';
+import {MapView} from 'components/MapView/MapView';
 import {OrderedMap} from 'immutable';
-import {IAds} from 'src/models/GeneralModels';
+import {IAds} from 'models/GeneralModels';
 import {useSelector} from 'react-redux';
 import {View, StyleSheet} from 'react-native';
 

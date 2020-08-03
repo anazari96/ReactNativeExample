@@ -122,10 +122,6 @@ const ServicesRoute = () => (
 const initialLayout = {width: Dimensions.get('window').width};
 
 export const ExploreScreen: React.FC = (props) => {
-  const ads: OrderedMap<string, IAds> = useSelector((state: any) =>
-    state.get('adsReducer'),
-  );
-
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
     {key: 'entertainment', title: 'تفریحی'},
@@ -225,8 +221,6 @@ export const ExploreScreen: React.FC = (props) => {
             0,
             0,
           );
-
-          console.log('color', color);
 
           return (
             // <Animated.View style={{color}}>

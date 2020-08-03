@@ -2,11 +2,11 @@ import {combineReducers} from 'redux-immutable';
 import {AuthActionTypes} from '../../constants';
 import {IAction} from '../../models/GeneralModels';
 import {authReducer} from './AuthReducer/authReducer';
-import {adsReducer} from './AdsReducer/adsReducer';
+import {feedReducer} from './FeedReducer/feedReducer';
 
 const appReducer = combineReducers<any, IAction, any>({
   authReducer: authReducer,
-  adsReducer: adsReducer,
+  feedReducer: feedReducer,
 });
 
 export const rootReducer = (

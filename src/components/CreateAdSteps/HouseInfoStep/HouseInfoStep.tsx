@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useState, useEffect, useMemo} from 'react';
 import {ScrollView} from 'react-native-gesture-handler';
 import {View, Text, StyleSheet, TextInput, Pressable} from 'react-native';
@@ -13,175 +14,24 @@ import {MainColor} from '../../../constants/variables';
 import {api} from '../../../utils/api';
 import {MapView} from '../../MapView/MapView';
 import {Seprator} from '../../../components/Seprator/Seprator';
+import {IAds} from 'models/GeneralModels';
+import {useFormContext, Controller} from 'react-hook-form';
+import {SelectMapStep} from './SelectMapStep';
 
 interface IProps {
   ad: any;
-  setStep: Function;
-  setAd: Function;
+  nextStep: (v: IAds) => void;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 100,
-
-    position: 'relative',
-  },
-  textColored: {
-    width: '100%',
-    color: MainColor,
-    textAlign: 'center',
-    textAlignVertical: 'center',
-    lineHeight: 20,
-    fontSize: 11,
-  },
-  textColoredWrapper: {
-    width: '100%',
-
-    marginTop: 36,
-    paddingHorizontal: 30,
-  },
-  starWrapper: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginVertical: 8,
-  },
-  text: {
-    lineHeight: 15,
-    fontSize: 9,
-  },
-  textWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    marginVertical: 8,
-  },
-  textContainer: {
-    marginVertical: 20,
-  },
-  starText: {
-    color: MainColor,
-    marginHorizontal: 6,
-  },
-  mainWrapper: {
-    width: '100%',
-  },
-  picker: {
-    backgroundColor: '#ffffff',
-    width: '100%',
-  },
-  mapWrapper: {
-    height: 237,
-
-    marginVertical: 15,
-    marginHorizontal: 5,
-
-    borderRadius: 10,
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderColor: 'rgba(112, 112, 112, 0.5)',
-    overflow: 'hidden',
-  },
-  submitWrapper: {
-    width: '100%',
-
-    paddingVertical: 14,
-    paddingHorizontal: 14,
-  },
-  submitBtn: {
-    height: 36,
-    backgroundColor: MainColor,
-    borderRadius: 5,
-
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  submitText: {
-    textAlign: 'center',
-    color: '#fff',
-  },
-  modeWrapper: {
-    marginHorizontal: 30,
-    marginVertical: 10,
-
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-
-    borderRadius: 5,
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderColor: 'rgba(112, 112, 112, 0.5)',
-    overflow: 'hidden',
-
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 3},
-    shadowRadius: 6,
-    shadowOpacity: 0.16,
-    elevation: 1,
-  },
-  buttonText: {
-    fontSize: 13,
-    lineHeight: 34,
-    textAlign: 'center',
-  },
-  typeButton: {
-    backgroundColor: '#fff',
-    height: 36,
-    width: '50%',
-  },
-  costWrapper: {
-    width: '100%',
-    paddingVertical: 25,
-  },
-  textInput: {
-    backgroundColor: '#fff',
-    height: 36,
-    width: 168,
-    paddingVertical: 8,
-    paddingHorizontal: 13,
-    fontSize: 13,
-    lineHeight: 20,
-    textAlign: 'right',
-  },
-  areaWrapper: {
-    width: '100%',
-    paddingVertical: 15,
-  },
-  ageWrapper: {
-    width: '100%',
-    paddingVertical: 20,
-  },
-  borderShadowStyle: {
-    borderRadius: 5,
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderColor: 'rgba(112, 112, 112, 0.5)',
-    overflow: 'hidden',
-
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 3},
-    shadowRadius: 6,
-    shadowOpacity: 0.16,
-    elevation: 1,
-  },
-});
 
 export const HouseInfoStep: React.FC<IProps> = (props) => {
   const [tmpAd, setTmpAd] = useState(props.ad);
-  const [steps, setSteps] = useState(1);
+  const [steps, setSteps] = useState<1 | 2 | 'map'>('map');
   const [type, setType] = useState<'sell' | 'rent'>('rent');
   const [selectedNeighbor, setSelectedNeighbor] = useState<
     string | undefined
   >();
+
+  const {control, handleSubmit, errors} = useFormContext();
 
   const {value: neighborsValue, loading: neighborsLoading} = usePromise<
     ApiResponse<any, any>
@@ -195,10 +45,14 @@ export const HouseInfoStep: React.FC<IProps> = (props) => {
   }, [neighborsValue]);
 
   useEffect(() => {
-    if (steps === 3) {
-      props.setStep(2);
-    }
-  }, [steps, props]);
+    setTmpAd(props.ad);
+  }, [props.ad]);
+
+  // useEffect(() => {
+  //   if (steps === 3) {
+  //     props.setStep(2);
+  //   }
+  // }, [steps, props]);
 
   const renderedStep = useMemo(() => {
     switch (steps) {
@@ -257,17 +111,21 @@ export const HouseInfoStep: React.FC<IProps> = (props) => {
                 </Picker>
               </InputWrapper>
               <InputWrapper title="انتخاب منطقه و محله" required={true}>
-                <Picker
-                  enabled={!neighborsLoading}
-                  style={styles.picker}
-                  selectedValue={selectedNeighbor}
-                  onValueChange={(iv) => {
-                    setSelectedNeighbor(iv as string);
-                  }}>
-                  {NeighborhoodsOptions?.map((v) => (
-                    <Picker.Item label={v.title} value={v.key} />
-                  ))}
-                </Picker>
+                <Controller
+                  name="distinct"
+                  render={({onChange, value}) => (
+                    <Picker
+                      enabled={!neighborsLoading}
+                      style={styles.picker}
+                      selectedValue={value}
+                      onValueChange={onChange}>
+                      {NeighborhoodsOptions?.map((v) => (
+                        <Picker.Item label={v.title} value={v.key} />
+                      ))}
+                    </Picker>
+                  )}
+                  control={control}
+                />
               </InputWrapper>
               <View style={styles.mapWrapper}>
                 <MapView showUserLocation={false} />
@@ -277,15 +135,6 @@ export const HouseInfoStep: React.FC<IProps> = (props) => {
                   style={{backgroundColor: '#fff', textAlign: 'right'}}
                 />
               </InputWrapper>
-              {/* <View style={styles.submitWrapper}>
-                <Pressable
-                  style={styles.submitBtn}
-                  onPress={() => {
-                    setSteps(2);
-                  }}>
-                  <Text style={styles.submitText}>ادامه</Text>
-                </Pressable>
-              </View> */}
             </View>
           </View>
         );
@@ -493,8 +342,190 @@ export const HouseInfoStep: React.FC<IProps> = (props) => {
             </View>
           </View>
         );
+      case 'map':
+        return (
+          <View style={{width: '100%', height: '100%'}}>
+            <SelectMapStep />;
+          </View>
+        );
     }
-  }, [steps, NeighborhoodsOptions, neighborsLoading, selectedNeighbor, type]);
+  }, [steps, NeighborhoodsOptions, neighborsLoading, type]);
 
-  return <ScrollView>{renderedStep}</ScrollView>;
+  return (
+    <>
+      <ScrollView>{renderedStep}</ScrollView>
+
+      {steps !== 'map' ? (
+        <View style={styles.submitWrapper}>
+          <Pressable
+            style={styles.submitBtn}
+            // onPress={() => {
+            //   setSteps(steps + 1);
+            // }}
+          >
+            <Text style={styles.submitText}>ادامه</Text>
+          </Pressable>
+        </View>
+      ) : null}
+    </>
+  );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 100,
+
+    position: 'relative',
+  },
+  textColored: {
+    width: '100%',
+    color: MainColor,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    lineHeight: 20,
+    fontSize: 11,
+  },
+  textColoredWrapper: {
+    width: '100%',
+
+    marginTop: 36,
+    paddingHorizontal: 30,
+  },
+  starWrapper: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 8,
+  },
+  text: {
+    lineHeight: 15,
+    fontSize: 9,
+  },
+  textWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    marginVertical: 8,
+  },
+  textContainer: {
+    marginVertical: 20,
+  },
+  starText: {
+    color: MainColor,
+    marginHorizontal: 6,
+  },
+  mainWrapper: {
+    width: '100%',
+  },
+  picker: {
+    backgroundColor: '#ffffff',
+    width: '100%',
+  },
+  mapWrapper: {
+    height: 237,
+
+    marginVertical: 15,
+    marginHorizontal: 5,
+
+    borderRadius: 10,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: 'rgba(112, 112, 112, 0.5)',
+    overflow: 'hidden',
+  },
+  modeWrapper: {
+    marginHorizontal: 30,
+    marginVertical: 10,
+
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+
+    borderRadius: 5,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: 'rgba(112, 112, 112, 0.5)',
+    overflow: 'hidden',
+
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 3},
+    shadowRadius: 6,
+    shadowOpacity: 0.16,
+    elevation: 1,
+  },
+  buttonText: {
+    fontSize: 13,
+    lineHeight: 34,
+    textAlign: 'center',
+  },
+  typeButton: {
+    backgroundColor: '#fff',
+    height: 36,
+    width: '50%',
+  },
+  costWrapper: {
+    width: '100%',
+    paddingVertical: 25,
+  },
+  textInput: {
+    backgroundColor: '#fff',
+    height: 36,
+    width: 168,
+    paddingVertical: 8,
+    paddingHorizontal: 13,
+    fontSize: 13,
+    lineHeight: 20,
+    textAlign: 'right',
+  },
+  areaWrapper: {
+    width: '100%',
+    paddingVertical: 15,
+  },
+  ageWrapper: {
+    width: '100%',
+    paddingVertical: 20,
+  },
+  borderShadowStyle: {
+    borderRadius: 5,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: 'rgba(112, 112, 112, 0.5)',
+    overflow: 'hidden',
+
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 3},
+    shadowRadius: 6,
+    shadowOpacity: 0.16,
+    elevation: 1,
+  },
+  submitWrapper: {
+    position: 'absolute',
+    width: '100%',
+
+    bottom: 10,
+
+    paddingVertical: 14,
+    paddingHorizontal: 14,
+    zIndex: 100,
+  },
+  submitBtn: {
+    height: 36,
+    backgroundColor: MainColor,
+    borderRadius: 5,
+
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  submitText: {
+    textAlign: 'center',
+    color: '#fff',
+  },
+});

@@ -1,5 +1,5 @@
 import {createAction} from 'redux-actions';
-import {AuthActionTypes} from '../../../constants';
+import {AuthActionTypes} from '../../constants';
 
 const loginAction = createAction(AuthActionTypes.LOGIN);
 const loginSuccessAction = createAction(AuthActionTypes.LOGIN_SUCCESS);

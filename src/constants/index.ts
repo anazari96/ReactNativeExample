@@ -1,2 +1,2 @@
-export {AuthActionTypes} from './ActionTypes/authActionTypes';
-export {AdsActionTypes} from './AdsTypes/adsActionTypes';
+export {AuthActionTypes} from './ActionTypes';
+export {FeedActionTypes} from './ActionTypes';

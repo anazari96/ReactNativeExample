@@ -1,18 +1,18 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useMemo, useState} from 'react';
-import {View, Text, StyleSheet, TouchableWithoutFeedback} from 'react-native';
+import React, {useMemo, useCallback} from 'react';
+import {View, Text, StyleSheet, Pressable} from 'react-native';
 import Swiper from 'react-native-swiper';
 import FastImage from 'react-native-fast-image';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import {useNavigation} from '@react-navigation/native';
 
-import {IAds} from '../../models/GeneralModels';
-import {MainColor} from '../../constants/variables';
-import {persianDate} from '../../utils/persianDate';
-import {persianNumber} from '../../utils/persianNumber';
-import {formatMoney} from '../../utils/formatMoney';
+import {IAds} from 'models/GeneralModels';
+import {MainColor} from 'constants/variables';
+import {persianNumber} from 'utils/persianNumber';
+import {formatMoney} from 'utils/formatMoney';
 
-import BookmarkSVG from '../../assets/icons/bookmark.svg';
-import StarSVG from '../../assets/icons/star.svg';
+import BookmarkSVG from 'assets/icons/bookmark.svg';
+import StarSVG from 'assets/icons/star.svg';
 
 export const AdCard: React.FC<
   IAds & {
@@ -21,184 +21,195 @@ export const AdCard: React.FC<
     scrollEnabled?: boolean;
   }
 > = (props) => {
-  const [enableScrollViewScroll, setEnableScrollViewScroll] = useState(true);
-
-  const translateKindOfTransfer = (t?: 'sell' | 'rent') => {
+  // const [enableScrollViewScroll, setEnableScrollViewScroll] = useState(true);
+  const navigation = useNavigation();
+  const translateKindOfTransfer = useCallback((t?: 'SELL' | 'RENT') => {
     switch (t) {
-      case 'sell':
+      case 'SELL':
         return 'فروشی';
-      case 'rent':
+      case 'RENT':
         return 'رهن و اجاره';
     }
     return '';
-  };
+  }, []);
 
-  const translateKindOfHouse = (t?: 'apartment' | 'villa' | 'land') => {
+  const translateKindOfHouse = useCallback((t?: 'APARTMENT' | 'HOUSE') => {
     switch (t) {
-      case 'apartment':
+      case 'APARTMENT':
         return 'آپارتمان';
-      case 'villa':
-        return 'ویلا';
-      case 'land':
-        return 'زمین';
+      case 'HOUSE':
+        return 'خانه';
     }
     return '';
-  };
+  }, []);
 
   const styles = useMemo(() => stylesFunc(props.type), [props.type]);
 
   return (
-    <View style={styles.container}>
-      <View
-        style={styles.imageWrapper}
-        onStartShouldSetResponder={() => {
-          props.setScrollEnabled?.(false);
-          if (props.scrollEnabled === false) {
-            props?.setScrollEnabled?.(true);
-          }
-          return true;
-        }}>
-        <Swiper
-          // style={styles.swiperWrapper}
-          showsButtons={false}
-          directionalLockEnabled={true}
-          disableScrollViewPanResponder={true}
-          dotColor="#8b8b8b"
-          activeDotColor="#ffffff"
-          loop={true}
-          onScroll={() => {
-            console.log('kjknkjbbhjgc');
-          }}
-          dot={
-            <View
-              style={{
-                backgroundColor: '#8b8b8b',
-                width: 21,
-                height: 3,
-                marginLeft: 2,
-                marginRight: 2,
-                marginBottom: -45,
-              }}
-            />
-          }
-          activeDot={
-            <View
-              style={{
-                backgroundColor: '#ffffff',
-                width: 21,
-                height: 3,
-                marginLeft: 2,
-                marginRight: 2,
-                marginBottom: -45,
-              }}
-            />
-          }>
-          {props.images.map((v: string, i: number) => (
-            <View style={{position: 'relative', paddingRight: 6}} key={v + i}>
-              <View style={styles.bookmarkStyle}>
-                <TouchableOpacity onPress={() => console.log('touch')}>
-                  <BookmarkSVG fill="rgba(0, 0, 0, 0.2)" stroke="#fff" />
-                </TouchableOpacity>
-              </View>
-              <View style={styles.starStyle}>
-                <StarSVG fill="#ffff00" />
-              </View>
-              <FastImage style={styles.imageStyle} source={{uri: v}} key={i} />
-            </View>
-          ))}
-        </Swiper>
-      </View>
+    <Pressable
+      onPress={() => {
+        navigation.navigate('MyModal', {id: props.id});
+      }}>
+      <View style={styles.container}>
+        <View
+          style={styles.imageWrapper}
+          onStartShouldSetResponder={() => {
+            props.setScrollEnabled?.(false);
+            if (props.scrollEnabled === false) {
+              props?.setScrollEnabled?.(true);
+            }
+            return true;
+          }}>
+          <Swiper
+            // style={styles.swiperWrapper}
+            showsButtons={false}
+            directionalLockEnabled={true}
+            disableScrollViewPanResponder={true}
+            dotColor="#8b8b8b"
+            activeDotColor="#ffffff"
+            loop={true}
+            onScroll={() => {
+              // console.log('kjknkjbbhjgc');
+            }}
+            dot={
+              <View
+                style={{
+                  backgroundColor: '#8b8b8b',
+                  width: 21,
+                  height: 3,
+                  marginLeft: 2,
+                  marginRight: 2,
+                  marginBottom: -45,
+                }}
+              />
+            }
+            activeDot={
+              <View
+                style={{
+                  backgroundColor: '#ffffff',
+                  width: 21,
+                  height: 3,
+                  marginLeft: 2,
+                  marginRight: 2,
+                  marginBottom: -45,
+                }}
+              />
+            }>
+            {props.images?.map((v: string, i: number) =>
+              v ? (
+                <View
+                  style={{position: 'relative', paddingRight: 6}}
+                  key={v + i}>
+                  <View style={styles.bookmarkStyle}>
+                    <TouchableOpacity onPress={() => console.log('touch')}>
+                      <BookmarkSVG fill="rgba(0, 0, 0, 0.2)" stroke="#fff" />
+                    </TouchableOpacity>
+                  </View>
+                  <View style={styles.starStyle}>
+                    <StarSVG fill="#ffff00" />
+                  </View>
+                  <FastImage
+                    style={styles.imageStyle}
+                    source={{uri: v}}
+                    key={i}
+                  />
+                </View>
+              ) : null,
+            ) || <></>}
+          </Swiper>
+        </View>
 
-      <View style={styles.descWrapper}>
-        <View
-          style={{
-            height: 26,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-evenly',
-            flexDirection: 'row',
-            backgroundColor: '#fafafa',
-          }}>
-          <Text style={{width: '33%', height: '100%', textAlign: 'center'}}>
-            {translateKindOfTransfer(props.kindOfTransfer)}
-          </Text>
-          <Text
+        <View style={styles.descWrapper}>
+          <View
             style={{
-              width: '33%',
-              height: '100%',
-              textAlign: 'center',
-              borderLeftWidth: 0.5,
-              borderRightWidth: 0.5,
-              borderColor: 'rgba(87, 87, 87, 0.2)',
+              height: 26,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-evenly',
+              flexDirection: 'row',
+              backgroundColor: '#fafafa',
             }}>
-            {translateKindOfHouse(props.kindOfHouse)}
-          </Text>
-          <Text style={{width: '33%', height: '100%', textAlign: 'center'}}>
-            {persianNumber(props.area)} متر
-          </Text>
-        </View>
-        <View
-          style={{
-            height: 48,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderStyle: 'solid',
-            borderColor: '#e8e8e8',
-            borderWidth: 0.5,
-            paddingLeft: 20,
-            paddingRight: 20,
-          }}>
-          <Text style={{}}>{props.desc}</Text>
-        </View>
-        <View
-          style={{
-            height: 41,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-evenly',
-            flexDirection: 'row-reverse',
-            borderStyle: 'solid',
-            borderColor: '#e8e8e8',
-            borderWidth: 0.5,
-          }}>
-          <Text style={{color: MainColor, fontSize: 13}}>قیمت:</Text>
-          <Text style={{color: MainColor, fontSize: 13}}>
-            {persianNumber(formatMoney(props.price, 0, '.', '/'))}
-          </Text>
-          <Text style={{color: MainColor, fontSize: 13}}>تومان</Text>
-        </View>
-        <View
-          style={{
-            height: 25,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-around',
-            flexDirection: 'row',
-            backgroundColor: '#fafafa',
-            borderBottomRightRadius: 7,
-            borderBottomLeftRadius: 7,
-          }}>
-          <Text style={{width: '33%', height: '100%', textAlign: 'center'}}>
-            {persianDate(props.date.getTime())}
-          </Text>
-          <Text
+            <Text style={{width: '33%', height: '100%', textAlign: 'center'}}>
+              {translateKindOfTransfer(props.post_type)}
+            </Text>
+            <Text
+              style={{
+                width: '33%',
+                height: '100%',
+                textAlign: 'center',
+                borderLeftWidth: 0.5,
+                borderRightWidth: 0.5,
+                borderColor: 'rgba(87, 87, 87, 0.2)',
+              }}>
+              {translateKindOfHouse(props.property_type)}
+            </Text>
+            <Text style={{width: '33%', height: '100%', textAlign: 'center'}}>
+              {persianNumber(props.area)} متر
+            </Text>
+          </View>
+          <View
             style={{
-              width: '33%',
-              height: '100%',
-              textAlign: 'center',
-              borderLeftWidth: 0.5,
-              borderRightWidth: 0.5,
-              borderColor: 'rgba(87, 87, 87, 0.2)',
+              height: 48,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderStyle: 'solid',
+              borderColor: '#e8e8e8',
+              borderWidth: 0.5,
+              paddingLeft: 20,
+              paddingRight: 20,
             }}>
-            {props.location}
-          </Text>
-          <Text style={{width: '33%', height: '100%', textAlign: 'center'}}>
-            {persianNumber(props.numberOfRoom)} خوابه
-          </Text>
+            <Text style={{}}>{props.desc}</Text>
+          </View>
+          <View
+            style={{
+              height: 41,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-evenly',
+              flexDirection: 'row-reverse',
+              borderStyle: 'solid',
+              borderColor: '#e8e8e8',
+              borderWidth: 0.5,
+            }}>
+            <Text style={{color: MainColor, fontSize: 13}}>قیمت:</Text>
+            <Text style={{color: MainColor, fontSize: 13}}>
+              {persianNumber(formatMoney(props.price, 0, '.', '/'))}
+            </Text>
+            <Text style={{color: MainColor, fontSize: 13}}>تومان</Text>
+          </View>
+          <View
+            style={{
+              height: 25,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-around',
+              flexDirection: 'row',
+              backgroundColor: '#fafafa',
+              borderBottomRightRadius: 7,
+              borderBottomLeftRadius: 7,
+            }}>
+            <Text style={{width: '33%', height: '100%', textAlign: 'center'}}>
+              {/* {persianDate?.(props.created?.getTime())} */}
+            </Text>
+            <Text
+              style={{
+                width: '33%',
+                height: '100%',
+                textAlign: 'center',
+                borderLeftWidth: 0.5,
+                borderRightWidth: 0.5,
+                borderColor: 'rgba(87, 87, 87, 0.2)',
+              }}>
+              {props.distinct}
+            </Text>
+            <Text style={{width: '33%', height: '100%', textAlign: 'center'}}>
+              {persianNumber(props.rooms)} خوابه
+            </Text>
+          </View>
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 };
 
