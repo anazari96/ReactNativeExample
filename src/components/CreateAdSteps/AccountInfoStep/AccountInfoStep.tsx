@@ -471,10 +471,9 @@ export const AccountInfoStep: React.FC<IProps> = (props) => {
       <View style={styles.submitWrapper}>
         <Pressable
           style={styles.submitBtn}
-          // onPress={() => {
-          //   setSteps(steps + 1);
-          // }}
-        >
+          onPress={() => {
+            props.nextStep({} as IAds);
+          }}>
           <Text style={styles.submitText}>ادامه</Text>
         </Pressable>
       </View>

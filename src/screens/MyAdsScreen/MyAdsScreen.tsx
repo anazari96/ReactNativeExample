@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
 
 export const MyAdsScreen: React.FC = (props) => {
   const ads: OrderedMap<string, IAds> = useSelector((state: any) =>
-    state.get('adsReducer'),
+    state.get('feedReducer'),
   );
 
   const markers: {

@@ -19,16 +19,161 @@ export const FeedAds: React.FC<IProps> = (props) => {
   const styles = useMemo(() => stylesFunc(props.mode), [props.mode]);
   const [scrollEnabled, setScrollEnabled] = useState(true);
 
-  // console.log('ads', Object.values(ads?.toJS()));
+  const v = [
+    {
+      area: 150,
+      created: new Date(),
+      desc: 'توضیحاااات ',
+      id: '123',
+      images: [
+        'https://unsplash.com/photos/4TBSG2Oqu0Q/download?force=true&w=640',
+        'https://unsplash.com/photos/VuatLT0MkQE/download?force=true&w=640',
+        'https://unsplash.com/photos/FytRPOMijMA/download?force=true&w=640',
+      ],
+      isBookmarked: true,
+      isStared: false,
+      property_type: 'HOUSE',
+      post_type: 'SELL',
+      distinct: 'هاشمیه',
+      rooms: 5,
+      price: 10000000,
+    },
+    {
+      area: 250,
+      created: new Date(),
+      desc: '123546546توضیحاااات ',
+      id: '12358',
+      images: [
+        'https://unsplash.com/photos/4TBSG2Oqu0Q/download?force=true&w=640',
+        'https://unsplash.com/photos/VuatLT0MkQE/download?force=true&w=640',
+        'https://unsplash.com/photos/FytRPOMijMA/download?force=true&w=640',
+      ],
+      isBookmarked: true,
+      isStared: true,
+      property_type: 'HOUSE',
+      post_type: 'RENT',
+      distinct: 'هاشمیه 22',
+      rooms: 3,
+      price: 10705100,
+    },
+    {
+      area: 150,
+      created: new Date(),
+      desc: 'توضیحاااات ',
+      id: '12443',
+      images: [
+        'https://unsplash.com/photos/4TBSG2Oqu0Q/download?force=true&w=640',
+        'https://unsplash.com/photos/VuatLT0MkQE/download?force=true&w=640',
+        'https://unsplash.com/photos/FytRPOMijMA/download?force=true&w=640',
+      ],
+      isBookmarked: true,
+      isStared: false,
+      property_type: 'APARTMENT',
+      post_type: 'SELL',
+      distinct: 'هاشمیه',
+      rooms: 5,
+      price: 10000000,
+    },
+    {
+      area: 250,
+      created: new Date(),
+      desc: '123546546توضیحاااات ',
+      id: '1235558',
+      images: [
+        'https://unsplash.com/photos/4TBSG2Oqu0Q/download?force=true&w=640',
+        'https://unsplash.com/photos/VuatLT0MkQE/download?force=true&w=640',
+        'https://unsplash.com/photos/FytRPOMijMA/download?force=true&w=640',
+      ],
+      isBookmarked: true,
+      isStared: true,
+      property_type: 'HOUSE',
+      post_type: 'RENT',
+      distinct: 'هاشمیه 22',
+      rooms: 3,
+      price: 10705100,
+    },
+    {
+      area: 150,
+      created: new Date(),
+      desc: 'توضیحاااات ',
+      id: '1221233',
+      images: [
+        'https://unsplash.com/photos/4TBSG2Oqu0Q/download?force=true&w=640',
+        'https://unsplash.com/photos/VuatLT0MkQE/download?force=true&w=640',
+        'https://unsplash.com/photos/FytRPOMijMA/download?force=true&w=640',
+      ],
+      isBookmarked: true,
+      isStared: false,
+      property_type: 'APARTMENT',
+      post_type: 'SELL',
+      distinct: 'هاشمیه',
+      rooms: 5,
+      price: 10000000,
+    },
+    {
+      area: 250,
+      created: new Date(),
+      desc: '123546546توضیحاااات ',
+      id: '124343358',
+      images: [
+        'https://unsplash.com/photos/4TBSG2Oqu0Q/download?force=true&w=640',
+        'https://unsplash.com/photos/VuatLT0MkQE/download?force=true&w=640',
+        'https://unsplash.com/photos/FytRPOMijMA/download?force=true&w=640',
+      ],
+      isBookmarked: true,
+      isStared: true,
+      property_type: 'HOUSE',
+      post_type: 'RENT',
+      distinct: 'هاشمیه 22',
+      rooms: 3,
+      price: 10705100,
+    },
+    {
+      area: 150,
+      created: new Date(),
+      desc: 'توضیحاااات ',
+      id: '129093',
+      images: [
+        'https://unsplash.com/photos/4TBSG2Oqu0Q/download?force=true&w=640',
+        'https://unsplash.com/photos/VuatLT0MkQE/download?force=true&w=640',
+        'https://unsplash.com/photos/FytRPOMijMA/download?force=true&w=640',
+      ],
+      isBookmarked: true,
+      isStared: false,
+      property_type: 'APARTMENT',
+      post_type: 'SELL',
+      distinct: 'هاشمیه',
+      rooms: 5,
+      price: 10000000,
+    },
+    {
+      area: 250,
+      created: new Date(),
+      desc: '123546546توضیحاااات ',
+      id: '12312358',
+      images: [
+        'https://unsplash.com/photos/4TBSG2Oqu0Q/download?force=true&w=640',
+        'https://unsplash.com/photos/VuatLT0MkQE/download?force=true&w=640',
+        'https://unsplash.com/photos/FytRPOMijMA/download?force=true&w=640',
+      ],
+      isBookmarked: true,
+      isStared: true,
+      property_type: 'HOUSE',
+      post_type: 'RENT',
+      distinct: 'هاشمیه 22',
+      rooms: 3,
+      price: 10705100,
+    },
+  ];
 
   return props.mode === 'Card' ? (
     <View style={styles.container}>
       <FlatList
         style={{display: 'flex'}}
         horizontal={true}
-        inverted={true}
+        inverted={false}
         ItemSeparatorComponent={() => <View style={{marginHorizontal: 4.5}} />}
-        data={Object.values(ads?.toJS())}
+        data={v as IAds[]}
         renderItem={({item}) => (
           <AdCard
             {...item}
@@ -39,13 +184,14 @@ export const FeedAds: React.FC<IProps> = (props) => {
             scrollEnabled={scrollEnabled}
           />
         )}
+        keyExtractor={(item) => `${item.id}`}
         ref={refFlatList}
         scrollEnabled={scrollEnabled}
       />
     </View>
   ) : (
     <>
-      {Object.values(ads?.toJS())?.map((item) => {
+      {v?.map((item) => {
         return <AdCard {...item} type={props.mode} key={item.id} />;
       })}
     </>

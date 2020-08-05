@@ -14,6 +14,7 @@ import {Seprator} from 'components/Seprator/Seprator';
 import InputWrapper from 'components/InputWrapper';
 import {StrokeColor, borderShadowStyle, MainColor} from 'constants/variables';
 import {IAds} from 'models/GeneralModels';
+import {useNavigation} from '@react-navigation/native';
 
 interface IProps {
   ad: any;
@@ -21,6 +22,7 @@ interface IProps {
 }
 
 export const FinalInfoStep: React.FC<IProps> = (props) => {
+  const navigation = useNavigation();
   return (
     <>
       <ScrollView>
@@ -186,10 +188,10 @@ export const FinalInfoStep: React.FC<IProps> = (props) => {
       <View style={styles.submitWrapper}>
         <Pressable
           style={styles.submitBtn}
-          // onPress={() => {
-          //   setSteps(steps + 1);
-          // }}
-        >
+          onPress={() => {
+            props.nextStep({} as IAds);
+            navigation.navigate('Feed');
+          }}>
           <Text style={styles.submitText}>ادامه</Text>
         </Pressable>
       </View>

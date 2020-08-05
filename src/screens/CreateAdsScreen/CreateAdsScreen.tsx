@@ -28,6 +28,10 @@ interface FormData {
   user: string;
   desc: string;
   visit_time: any;
+  map: {
+    latitude: number;
+    longtitude: number;
+  };
 }
 
 const schema = yup.object({
@@ -45,6 +49,10 @@ const schema = yup.object({
     first_name: yup.string().required(),
     last_name: yup.string().required(),
   }),
+  map: yup.object({
+    latitude: yup.number(),
+    longitude: yup.number(),
+  }),
 });
 
 export const CreateAdsScreen: React.FC<IProps> = (props) => {
@@ -52,28 +60,36 @@ export const CreateAdsScreen: React.FC<IProps> = (props) => {
   const [ad, setAd] = useState({});
   const methods = useForm<FormData>({
     defaultValues: {
-      address: undefined,
-      area: undefined,
-      desc: undefined,
+      address: '',
+      area: 0,
+      desc: '',
       distinct: '',
       images: undefined,
-      name: undefined,
-      neighbourhood: undefined,
-      post_type: undefined,
-      price: undefined,
-      price2: undefined,
-      property_type: undefined,
-      rooms: undefined,
+      name: '',
+      neighbourhood: '',
+      post_type: 'SELL',
+      price: 0,
+      price2: 0,
+      property_type: 'HOUSE',
+      rooms: 0,
       user: undefined,
       visit_time: undefined,
+      map: undefined,
     },
+    resolver: yupResolver(schema),
   });
+
+  useEffect(() => {
+    console.log('watch', methods.watch('map'), methods.getValues('map'));
+  }, [methods.watch('map'), methods.getValues('map')]);
 
   const nextStep = useCallback(
     (v: IAds) => {
       setAd(v);
       if (step !== 3) {
         setStep(step + 1);
+      } else {
+        setStep(1);
       }
     },
     [step],
@@ -117,6 +133,7 @@ const styles = StyleSheet.create({
   },
   progressWrapper: {
     height: 62,
+    // marginBottom: 62,
   },
   submitWrapper: {
     position: 'absolute',

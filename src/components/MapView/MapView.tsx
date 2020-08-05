@@ -1,23 +1,28 @@
 import React, {useState, useEffect} from 'react';
 import MV, {PROVIDER_GOOGLE, Region, Marker} from 'react-native-maps';
-import {View, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
+import {
+  PERMISSIONS,
+  checkMultiple,
+  requestMultiple,
+} from 'react-native-permissions';
 
 import {AdCard} from 'components/AdCard/AdCard';
-import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 
 interface IProps {
   markers?: {
     id: number;
     cord: Region;
-    title: string;
-    desc: string;
+    title?: string;
+    desc?: string;
     ad?: any;
   }[];
   startRegion?: Region;
   showUserLocation?: boolean;
   zoomEnabled?: boolean;
   selectLocationEnabled?: boolean;
+  selectLocation?: (v: {latitude: number; longitude: number}) => void;
 }
 
 const styles = StyleSheet.create({
@@ -53,6 +58,41 @@ export const MapView: React.FC<IProps> = (props) => {
     if (props.startRegion) {
       setMyLoc(props.startRegion);
     } else {
+      checkMultiple([
+        PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
+        PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION,
+      ])
+        .then((v) => {
+          let requests: any[] = [];
+          if (v['android.permission.ACCESS_COARSE_LOCATION'] === 'denied') {
+            requests.push(PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION);
+          }
+          if (v['android.permission.ACCESS_FINE_LOCATION'] === 'denied') {
+            requests.push(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
+          }
+          if (requests.length > 0) {
+            requestMultiple([
+              PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
+              PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION,
+            ])
+              .then((statuses) => {
+                console.log(
+                  'ACCESS_FINE_LOCATION',
+                  statuses[PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION],
+                );
+                console.log(
+                  'ACCESS_COARSE_LOCATION',
+                  statuses[PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION],
+                );
+              })
+              .catch((err) => {
+                console.log('err request', err);
+              });
+          }
+        })
+        .catch((err) => {
+          console.log('err check', err);
+        });
       Geolocation.getCurrentPosition(
         (position) => {
           setMyLoc({
@@ -95,8 +135,9 @@ export const MapView: React.FC<IProps> = (props) => {
           }
         }}
         onLongPress={(e) => {
-          if (props.selectLocationEnabled) {
-            console.log('longpress', e);
+          if (props.selectLocationEnabled && props.selectLocation) {
+            console.log('longpress', e.nativeEvent.coordinate);
+            props.selectLocation(e.nativeEvent.coordinate);
           }
         }}
         // cacheEnabled={true}
@@ -106,11 +147,12 @@ export const MapView: React.FC<IProps> = (props) => {
           <Marker
             identifier={`${v.id}`}
             coordinate={v.cord}
-            title={v.title}
-            description={v.desc}
+            title={v.title || ''}
+            description={v.desc || ''}
             onPress={(e) => {
               setPreviewMarker(v.ad?.toJS());
             }}
+            key={v.id}
           />
         ))}
       </MV>

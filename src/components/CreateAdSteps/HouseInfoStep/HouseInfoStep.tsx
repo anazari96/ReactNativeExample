@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState, useEffect, useMemo} from 'react';
+import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import {ScrollView} from 'react-native-gesture-handler';
 import {View, Text, StyleSheet, TextInput, Pressable} from 'react-native';
 import {Picker} from '@react-native-community/picker';
@@ -17,6 +17,7 @@ import {Seprator} from '../../../components/Seprator/Seprator';
 import {IAds} from 'models/GeneralModels';
 import {useFormContext, Controller} from 'react-hook-form';
 import {SelectMapStep} from './SelectMapStep';
+import {LatLng} from 'react-native-maps';
 
 interface IProps {
   ad: any;
@@ -25,13 +26,13 @@ interface IProps {
 
 export const HouseInfoStep: React.FC<IProps> = (props) => {
   const [tmpAd, setTmpAd] = useState(props.ad);
-  const [steps, setSteps] = useState<1 | 2 | 'map'>('map');
-  const [type, setType] = useState<'sell' | 'rent'>('rent');
+  const [steps, setSteps] = useState<1 | 2 | 'map'>(1);
+  const [type, setType] = useState<'SELL' | 'RENT'>('SELL');
   const [selectedNeighbor, setSelectedNeighbor] = useState<
     string | undefined
   >();
 
-  const {control, handleSubmit, errors} = useFormContext();
+  const {control, handleSubmit, errors, getValues, setValue} = useFormContext();
 
   const {value: neighborsValue, loading: neighborsLoading} = usePromise<
     ApiResponse<any, any>
@@ -54,283 +55,322 @@ export const HouseInfoStep: React.FC<IProps> = (props) => {
   //   }
   // }, [steps, props]);
 
+  const setLocation = useCallback(
+    (v: LatLng) => {
+      if (v) {
+        console.log('v', v);
+
+        setValue('map', v, {shouldValidate: true});
+      }
+      setSteps(1);
+    },
+    [setValue],
+  );
+
   const renderedStep = useMemo(() => {
     switch (steps) {
       case 1:
         return (
-          <View style={styles.container}>
-            <View style={styles.textColoredWrapper}>
-              <Text style={styles.textColored}>
-                کاربر گرامی هرچه ملک خود را با دقت و جزئیات بیشتر ثبت کنید ملک
-                شما ستاره بیشتری از نگاه کاربران دریافت خواهد کرد که در نتیجه
-                باعث بازدید بیشتر مشاوران و سریع تر انجام شدن معامله می شود
-              </Text>
-            </View>
-            <View style={styles.textContainer}>
-              <View style={styles.textWrapper}>
-                <Text style={styles.text}>
-                  نکات مهم در دریافت ستاره کامل برای آگهی
+          <ScrollView>
+            <View style={styles.container}>
+              <View style={styles.textColoredWrapper}>
+                <Text style={styles.textColored}>
+                  کاربر گرامی هرچه ملک خود را با دقت و جزئیات بیشتر ثبت کنید ملک
+                  شما ستاره بیشتری از نگاه کاربران دریافت خواهد کرد که در نتیجه
+                  باعث بازدید بیشتر مشاوران و سریع تر انجام شدن معامله می شود
                 </Text>
               </View>
-              <View style={styles.textWrapper}>
-                <Text style={styles.starText}>*</Text>
-                <Text style={styles.text}>تعداد عکس مناسب و با کیفیت</Text>
-                <Text style={styles.starText}>*</Text>
-              </View>
+              <View style={styles.textContainer}>
+                <View style={styles.textWrapper}>
+                  <Text style={styles.text}>
+                    نکات مهم در دریافت ستاره کامل برای آگهی
+                  </Text>
+                </View>
+                <View style={styles.textWrapper}>
+                  <Text style={styles.starText}>*</Text>
+                  <Text style={styles.text}>تعداد عکس مناسب و با کیفیت</Text>
+                  <Text style={styles.starText}>*</Text>
+                </View>
 
-              <View style={styles.textWrapper}>
-                <Text style={styles.starText}>*</Text>
-                <Text style={styles.text}>ثبت دقیق آدرس و شماره تماس</Text>
-                <Text style={styles.starText}>*</Text>
+                <View style={styles.textWrapper}>
+                  <Text style={styles.starText}>*</Text>
+                  <Text style={styles.text}>ثبت دقیق آدرس و شماره تماس</Text>
+                  <Text style={styles.starText}>*</Text>
+                </View>
+                <View style={styles.textWrapper}>
+                  <Text style={styles.starText}>*</Text>
+                  <Text style={styles.text}>ثبت کامل امکانات ملک</Text>
+                  <Text style={styles.starText}>*</Text>
+                </View>
+                <View style={styles.textWrapper}>
+                  <Text style={styles.starText}>*</Text>
+                  <Text style={styles.text}>توضیحات تکمیلی کامل</Text>
+                  <Text style={styles.starText}>*</Text>
+                </View>
+                <View style={styles.starWrapper}>
+                  <StarSVG fill="#01babc" />
+                  <StarSVG fill="#01babc" />
+                  <StarSVG fill="#01babc" />
+                  <StarSVG fill="#01babc" />
+                  <StarSVG fill="#01babc" />
+                </View>
+                <View style={styles.textWrapper}>
+                  <Text style={styles.text}>با تشکر از همکاری شما</Text>
+                </View>
               </View>
-              <View style={styles.textWrapper}>
-                <Text style={styles.starText}>*</Text>
-                <Text style={styles.text}>ثبت کامل امکانات ملک</Text>
-                <Text style={styles.starText}>*</Text>
-              </View>
-              <View style={styles.textWrapper}>
-                <Text style={styles.starText}>*</Text>
-                <Text style={styles.text}>توضیحات تکمیلی کامل</Text>
-                <Text style={styles.starText}>*</Text>
-              </View>
-              <View style={styles.starWrapper}>
-                <StarSVG fill="#01babc" />
-                <StarSVG fill="#01babc" />
-                <StarSVG fill="#01babc" />
-                <StarSVG fill="#01babc" />
-                <StarSVG fill="#01babc" />
-              </View>
-              <View style={styles.textWrapper}>
-                <Text style={styles.text}>با تشکر از همکاری شما</Text>
+              <View style={styles.mainWrapper}>
+                <InputWrapper title="شهر" required={true}>
+                  <Picker enabled={false} style={styles.picker}>
+                    <Picker.Item label="مشهد" value="Mashhad" />
+                  </Picker>
+                </InputWrapper>
+                <InputWrapper title="انتخاب منطقه و محله" required={true}>
+                  <Controller
+                    name="distinct"
+                    render={({onChange, value}) => (
+                      <Picker
+                        enabled={!neighborsLoading}
+                        style={styles.picker}
+                        selectedValue={value}
+                        onValueChange={onChange}>
+                        {NeighborhoodsOptions?.map((v) => (
+                          <Picker.Item label={v.title} value={v.key} />
+                        ))}
+                      </Picker>
+                    )}
+                    control={control}
+                  />
+                </InputWrapper>
+                <View style={styles.mapWrapper}>
+                  <Pressable
+                    onPress={() => {
+                      setSteps('map');
+                    }}
+                    onTouchMove={() => {
+                      // setSteps('map');
+                    }}>
+                    <MapView
+                      showUserLocation={false}
+                      markers={
+                        getValues('map') ? [getValues('map')] : undefined
+                      }
+                    />
+                  </Pressable>
+                </View>
+                <InputWrapper
+                  title="آدرس دقیق خود را وارد کنید"
+                  required={true}>
+                  <Controller
+                    name="address"
+                    control={control}
+                    render={({onChange, onBlur, value}) => (
+                      <TextInput
+                        onChangeText={onChange}
+                        onBlur={onBlur}
+                        value={value}
+                        style={{backgroundColor: '#fff', textAlign: 'right'}}
+                      />
+                    )}
+                  />
+                </InputWrapper>
               </View>
             </View>
-            <View style={styles.mainWrapper}>
-              <InputWrapper title="شهر" required={true}>
-                <Picker enabled={false} style={styles.picker}>
-                  <Picker.Item label="مشهد" value="Mashhad" />
-                </Picker>
-              </InputWrapper>
-              <InputWrapper title="انتخاب منطقه و محله" required={true}>
-                <Controller
-                  name="distinct"
-                  render={({onChange, value}) => (
-                    <Picker
-                      enabled={!neighborsLoading}
-                      style={styles.picker}
-                      selectedValue={value}
-                      onValueChange={onChange}>
-                      {NeighborhoodsOptions?.map((v) => (
-                        <Picker.Item label={v.title} value={v.key} />
-                      ))}
-                    </Picker>
-                  )}
-                  control={control}
-                />
-              </InputWrapper>
-              <View style={styles.mapWrapper}>
-                <MapView showUserLocation={false} />
-              </View>
-              <InputWrapper title="آدرس دقیق خود را وارد کنید" required={true}>
-                <TextInput
-                  style={{backgroundColor: '#fff', textAlign: 'right'}}
-                />
-              </InputWrapper>
-            </View>
-          </View>
+          </ScrollView>
         );
       case 2:
         return (
-          <View style={styles.container}>
-            <View style={styles.textContainer}>
-              <View style={styles.textWrapper}>
-                <WarningSVG />
-                <Text
-                  style={[
-                    styles.text,
-                    {marginHorizontal: 6, fontSize: 12, lineHeight: 20},
-                  ]}>
-                  اطلاعات ملک خود را با دقت وارد کنید
-                </Text>
-                <WarningSVG />
-              </View>
-            </View>
-            <Seprator />
-            <View style={styles.mainWrapper}>
-              <View style={styles.modeWrapper}>
-                <Pressable
-                  style={[
-                    styles.typeButton,
-                    {backgroundColor: type === 'sell' ? MainColor : '#fff'},
-                  ]}
-                  onPress={() => {
-                    setType('sell');
-                  }}>
-                  <Text style={styles.buttonText}>فروش</Text>
-                </Pressable>
-                <Pressable
-                  style={[
-                    styles.typeButton,
-                    type === 'rent'
-                      ? {backgroundColor: MainColor}
-                      : {backgroundColor: '#fff'},
-                  ]}
-                  onPress={() => {
-                    setType('rent');
-                  }}>
-                  <Text style={styles.buttonText}>رهن و اجاره</Text>
-                </Pressable>
+          <ScrollView>
+            <View style={styles.container}>
+              <View style={styles.textContainer}>
+                <View style={styles.textWrapper}>
+                  <WarningSVG />
+                  <Text
+                    style={[
+                      styles.text,
+                      {marginHorizontal: 6, fontSize: 12, lineHeight: 20},
+                    ]}>
+                    اطلاعات ملک خود را با دقت وارد کنید
+                  </Text>
+                  <WarningSVG />
+                </View>
               </View>
               <Seprator />
-
-              <View style={styles.costWrapper}>
-                {type === 'sell' ? (
-                  <View
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexDirection: 'row',
-                    }}>
-                    <InputWrapper
-                      title="مبلغ ملک را وارد کنید (تومان)"
-                      required={true}
-                      childStyle={{
-                        width: '100%',
-                        display: 'flex',
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                      }}>
-                      <TextInput
-                        style={[styles.textInput, styles.borderShadowStyle]}
-                        placeholder="۸۰۰/۰۰۰/۰۰۰"
-                      />
-                      <Pressable
-                        style={[
-                          {
-                            height: 36,
-                            width: 100,
-                            backgroundColor: '#fff',
-                          },
-                          styles.borderShadowStyle,
-                        ]}>
-                        <Text style={styles.buttonText}>توافقی</Text>
-                      </Pressable>
-                    </InputWrapper>
-                  </View>
-                ) : (
-                  <View
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexDirection: 'column',
-                    }}>
-                    <InputWrapper
-                      title="مبلغ رهن را وارد کنید (تومان)"
-                      required={true}
-                      childStyle={{
-                        width: '100%',
-                        display: 'flex',
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                      }}>
-                      <TextInput
-                        style={[styles.textInput, styles.borderShadowStyle]}
-                        placeholder="۸۰۰/۰۰۰/۰۰۰"
-                      />
-                      <Pressable
-                        style={[
-                          {
-                            height: 36,
-                            width: 100,
-                            backgroundColor: '#fff',
-                          },
-                          styles.borderShadowStyle,
-                        ]}>
-                        <Text style={styles.buttonText}>توافقی</Text>
-                      </Pressable>
-                    </InputWrapper>
-                    <InputWrapper
-                      title="مبلغ اجاره را وارد کنید (تومان)"
-                      required={true}
-                      childStyle={{
-                        width: '100%',
-                        display: 'flex',
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                      }}>
-                      <TextInput
-                        style={[styles.textInput, styles.borderShadowStyle]}
-                        placeholder="۱/۰۰۰/۰۰۰"
-                      />
-                      <Pressable
-                        style={[
-                          {
-                            height: 36,
-                            width: 100,
-                            backgroundColor: '#fff',
-                          },
-                          styles.borderShadowStyle,
-                        ]}>
-                        <Text style={styles.buttonText}>رهن کامل</Text>
-                      </Pressable>
-                    </InputWrapper>
-                  </View>
-                )}
-              </View>
-              <Seprator />
-              <View style={styles.areaWrapper}>
-                <InputWrapper
-                  title="متراژ ملک خود را وارد کنید (متر مربع)"
-                  required={true}
-                  childStyle={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'flex-start',
-                    flexDirection: 'row',
-                  }}>
-                  <TextInput
-                    style={[styles.textInput, styles.borderShadowStyle]}
-                    placeholder="۱۵۰"
-                  />
-                </InputWrapper>
-              </View>
-              <Seprator />
-
-              <View style={styles.ageWrapper}>
-                <InputWrapper
-                  title="سال ساخت (مثال 5 سال)"
-                  required={true}
-                  childStyle={{
-                    width: '100%',
-                    display: 'flex',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                  }}>
-                  <TextInput
-                    style={[styles.textInput, styles.borderShadowStyle]}
-                    placeholder="۱۰"
-                  />
+              <View style={styles.mainWrapper}>
+                <View style={styles.modeWrapper}>
                   <Pressable
                     style={[
-                      {
-                        height: 36,
-                        width: 100,
-                        backgroundColor: '#fff',
-                      },
-                      styles.borderShadowStyle,
-                    ]}>
-                    <Text style={styles.buttonText}>نوساز</Text>
+                      styles.typeButton,
+                      {backgroundColor: type === 'SELL' ? MainColor : '#fff'},
+                    ]}
+                    onPress={() => {
+                      setType('SELL');
+                    }}>
+                    <Text style={styles.buttonText}>فروش</Text>
                   </Pressable>
-                </InputWrapper>
-              </View>
+                  <Pressable
+                    style={[
+                      styles.typeButton,
+                      type === 'RENT'
+                        ? {backgroundColor: MainColor}
+                        : {backgroundColor: '#fff'},
+                    ]}
+                    onPress={() => {
+                      setType('RENT');
+                    }}>
+                    <Text style={styles.buttonText}>رهن و اجاره</Text>
+                  </Pressable>
+                </View>
+                <Seprator />
 
-              {/* <View style={styles.submitWrapper}>
+                <View style={styles.costWrapper}>
+                  {type === 'SELL' ? (
+                    <View
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexDirection: 'row',
+                      }}>
+                      <InputWrapper
+                        title="مبلغ ملک را وارد کنید (تومان)"
+                        required={true}
+                        childStyle={{
+                          width: '100%',
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                        }}>
+                        <TextInput
+                          style={[styles.textInput, styles.borderShadowStyle]}
+                          placeholder="۸۰۰/۰۰۰/۰۰۰"
+                        />
+                        <Pressable
+                          style={[
+                            {
+                              height: 36,
+                              width: 100,
+                              backgroundColor: '#fff',
+                            },
+                            styles.borderShadowStyle,
+                          ]}>
+                          <Text style={styles.buttonText}>توافقی</Text>
+                        </Pressable>
+                      </InputWrapper>
+                    </View>
+                  ) : (
+                    <View
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexDirection: 'column',
+                      }}>
+                      <InputWrapper
+                        title="مبلغ رهن را وارد کنید (تومان)"
+                        required={true}
+                        childStyle={{
+                          width: '100%',
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                        }}>
+                        <TextInput
+                          style={[styles.textInput, styles.borderShadowStyle]}
+                          placeholder="۸۰۰/۰۰۰/۰۰۰"
+                        />
+                        <Pressable
+                          style={[
+                            {
+                              height: 36,
+                              width: 100,
+                              backgroundColor: '#fff',
+                            },
+                            styles.borderShadowStyle,
+                          ]}>
+                          <Text style={styles.buttonText}>توافقی</Text>
+                        </Pressable>
+                      </InputWrapper>
+                      <InputWrapper
+                        title="مبلغ اجاره را وارد کنید (تومان)"
+                        required={true}
+                        childStyle={{
+                          width: '100%',
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                        }}>
+                        <TextInput
+                          style={[styles.textInput, styles.borderShadowStyle]}
+                          placeholder="۱/۰۰۰/۰۰۰"
+                        />
+                        <Pressable
+                          style={[
+                            {
+                              height: 36,
+                              width: 100,
+                              backgroundColor: '#fff',
+                            },
+                            styles.borderShadowStyle,
+                          ]}>
+                          <Text style={styles.buttonText}>رهن کامل</Text>
+                        </Pressable>
+                      </InputWrapper>
+                    </View>
+                  )}
+                </View>
+                <Seprator />
+                <View style={styles.areaWrapper}>
+                  <InputWrapper
+                    title="متراژ ملک خود را وارد کنید (متر مربع)"
+                    required={true}
+                    childStyle={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'flex-start',
+                      flexDirection: 'row',
+                    }}>
+                    <TextInput
+                      style={[styles.textInput, styles.borderShadowStyle]}
+                      placeholder="۱۵۰"
+                    />
+                  </InputWrapper>
+                </View>
+                <Seprator />
+
+                <View style={styles.ageWrapper}>
+                  <InputWrapper
+                    title="سال ساخت (مثال 5 سال)"
+                    required={true}
+                    childStyle={{
+                      width: '100%',
+                      display: 'flex',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}>
+                    <TextInput
+                      style={[styles.textInput, styles.borderShadowStyle]}
+                      placeholder="۱۰"
+                    />
+                    <Pressable
+                      style={[
+                        {
+                          height: 36,
+                          width: 100,
+                          backgroundColor: '#fff',
+                        },
+                        styles.borderShadowStyle,
+                      ]}>
+                      <Text style={styles.buttonText}>نوساز</Text>
+                    </Pressable>
+                  </InputWrapper>
+                </View>
+
+                {/* <View style={styles.submitWrapper}>
                 <Pressable
                   style={styles.submitBtn}
                   onPress={() => {
@@ -339,30 +379,34 @@ export const HouseInfoStep: React.FC<IProps> = (props) => {
                   <Text style={styles.submitText}>ادامه</Text>
                 </Pressable>
               </View> */}
+              </View>
             </View>
-          </View>
+          </ScrollView>
         );
       case 'map':
         return (
-          <View style={{width: '100%', height: '100%'}}>
-            <SelectMapStep />;
+          <View style={{width: '100%'}}>
+            <SelectMapStep setLocation={setLocation} />
           </View>
         );
     }
-  }, [steps, NeighborhoodsOptions, neighborsLoading, type]);
+  }, [steps, NeighborhoodsOptions, neighborsLoading, type, control]);
 
   return (
     <>
-      <ScrollView>{renderedStep}</ScrollView>
+      {renderedStep}
 
       {steps !== 'map' ? (
         <View style={styles.submitWrapper}>
           <Pressable
             style={styles.submitBtn}
-            // onPress={() => {
-            //   setSteps(steps + 1);
-            // }}
-          >
+            onPress={() => {
+              if (steps === 1) {
+                setSteps(2);
+              } else {
+                props.nextStep(tmpAd);
+              }
+            }}>
             <Text style={styles.submitText}>ادامه</Text>
           </Pressable>
         </View>

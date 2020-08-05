@@ -8,11 +8,16 @@ import {Picker} from '@react-native-community/picker';
 
 import {FeedAds} from 'containers/FeedAds/FeedAds';
 import {getFeedAction} from 'redux/actions/feedAction';
+import {MainColor} from 'constants/variables';
 
 interface IProps {}
 
 export const FeedScreen: React.FC<IProps> = (props) => {
   const [kindOfAd, setKindOfAd] = useState<'sell' | 'rent' | undefined>();
+  const [cost, setCost] = useState();
+  const [kind, setKind] = useState();
+  const [area, setArea] = useState();
+  const [more, setMore] = useState();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -39,18 +44,26 @@ export const FeedScreen: React.FC<IProps> = (props) => {
         {/* first row of filters */}
         <View style={{flexDirection: 'row', height: 28, marginBottom: 5}}>
           {/* kind of ad: sell or rent */}
-          <Picker
-            selectedValue={kindOfAd}
-            style={[styles.picker, styles.firstPicker]}
-            onValueChange={(itemValue) => setKindOfAd(itemValue as 'sell')}>
-            <Picker.Item label="فروش" value="sell" />
-            <Picker.Item label="اجاره و رهن" value="rent" />
-          </Picker>
+          <View
+            style={[
+              styles.pickerWrapper,
+              {flex: undefined},
+              kindOfAd ? {backgroundColor: MainColor} : undefined,
+            ]}>
+            <Picker
+              selectedValue={kindOfAd}
+              style={[styles.picker, styles.firstPicker]}
+              onValueChange={(itemValue) => setKindOfAd(itemValue as 'sell')}>
+              <Picker.Item label="فروش" value="sell" />
+              <Picker.Item label="اجاره و رهن" value="rent" />
+            </Picker>
+          </View>
           {/* Search */}
           <TextInput
             placeholder="جستجو"
             style={{
               flex: 1,
+              width: '100%',
               height: '100%',
               backgroundColor: '#fff',
               color: '#707070',
@@ -65,84 +78,106 @@ export const FeedScreen: React.FC<IProps> = (props) => {
         </View>
         <View style={{flexDirection: 'row-reverse', height: 28}}>
           {/* Price */}
-          <Picker
-            selectedValue={kindOfAd}
-            style={[styles.picker]}
-            onValueChange={(itemValue) => setKindOfAd(itemValue as 'sell')}>
-            <Picker.Item label="فروش" value="sell" />
-            <Picker.Item label="اجاره و رهن" value="rent" />
-          </Picker>
+          <View
+            style={[
+              styles.pickerWrapper,
+              cost ? {backgroundColor: MainColor} : undefined,
+            ]}>
+            <Picker
+              selectedValue={cost}
+              style={[styles.picker]}
+              onValueChange={(itemValue) => setCost(itemValue)}>
+              <Picker.Item label="قیمت" value="sell" />
+              <Picker.Item label="" value="rent" />
+            </Picker>
+          </View>
+
           {/* kind of house */}
-          <Picker
-            selectedValue={kindOfAd}
-            style={[styles.picker]}
-            onValueChange={(itemValue) => setKindOfAd(itemValue as 'sell')}>
-            <Picker.Item label="فروش" value="sell" />
-            <Picker.Item label="اجاره و رهن" value="rent" />
-          </Picker>
+          <View
+            style={[
+              styles.pickerWrapper,
+              kind ? {backgroundColor: MainColor} : undefined,
+            ]}>
+            <Picker
+              selectedValue={kind}
+              style={[styles.picker]}
+              onValueChange={(itemValue) => setKind(itemValue)}>
+              <Picker.Item label="نوع" value={''} />
+              <Picker.Item label="" value="rent" />
+            </Picker>
+          </View>
           {/* area */}
-          <Picker
-            selectedValue={kindOfAd}
-            style={[styles.picker]}
-            onValueChange={(itemValue) => setKindOfAd(itemValue as 'sell')}>
-            <Picker.Item label="فروش" value="sell" />
-            <Picker.Item label="اجاره و رهن" value="rent" />
-          </Picker>
+          <View
+            style={[
+              styles.pickerWrapper,
+              area ? {backgroundColor: MainColor} : undefined,
+            ]}>
+            <Picker
+              selectedValue={area}
+              style={[styles.picker]}
+              onValueChange={(itemValue) => setArea(itemValue)}>
+              <Picker.Item label="متراژ" value="" />
+              <Picker.Item label="" value="rent" />
+            </Picker>
+          </View>
           {/* more */}
-          <Picker
-            selectedValue={kindOfAd}
-            style={[styles.picker]}
-            onValueChange={(itemValue) => setKindOfAd(itemValue as 'sell')}
-            itemStyle={{
-              alignItems: 'center',
-              textAlign: 'center',
-              display: 'flex',
-              justifyContent: 'center',
-              fontSize: 50,
-              fontWeight: '700',
-            }}>
-            <Picker.Item label="rrrrrr" value="sell" />
-            <Picker.Item label="tttttttttt" value="rent" />
-          </Picker>
+          <View
+            style={[
+              styles.pickerWrapper,
+              more ? {backgroundColor: MainColor} : undefined,
+            ]}>
+            <Picker
+              selectedValue={more}
+              style={[styles.picker]}
+              onValueChange={(itemValue) => setMore(itemValue)}
+              itemStyle={{
+                alignItems: 'center',
+                textAlign: 'center',
+                display: 'flex',
+                justifyContent: 'center',
+                fontSize: 50,
+                fontWeight: '700',
+              }}>
+              <Picker.Item label="بیشتر" value="" />
+              <Picker.Item label="" value="rent" />
+            </Picker>
+          </View>
         </View>
       </View>
 
       <ScrollView style={{width: '100%'}}>
         <FeedAds mode="Card" />
         <FeedAds mode="Land" />
-        {/* {v.map((item: any) => {
-          return <AdCard {...item} type={'Land'} key={item.id} />;
-        })} */}
       </ScrollView>
-      {/* <AdCard
-        area={200}
-        date={new Date(1594219253000)}
-        desc="فروش منزل ویلایی واقع در هاشیمه مشهد
-        موقعیت عالی"
-        images={[
-          'https://unsplash.com/photos/4TBSG2Oqu0Q/download?force=true&w=640',
-          'https://unsplash.com/photos/VuatLT0MkQE/download?force=true&w=640',
-          'https://unsplash.com/photos/FytRPOMijMA/download?force=true&w=640',
-        ]}
-        isBookmarked={false}
-        isStared={false}
-        kindOfHouse={'apartment'}
-        kindOfTransfer={'rent'}
-        location="هاشمیه"
-        numberOfRoom={3}
-        price={1000000}
-        type="Card"
-      /> */}
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  picker: {
+  pickerWrapper: {
     height: '100%',
-    backgroundColor: '#01babc',
+    flex: 1,
+
+    backgroundColor: '#ffffff',
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 5,
+
+    borderRadius: 5,
+
+    // shadowOffset: {width: 10, height: 30},
+    // shadowColor: '#000',
+    // shadowOpacity: 0.5,
+    // shadowRadius: 0.7,
+  },
+  picker: {
+    width: '100%',
+    // width: '100%',
     // marginRight: 6,
-    marginLeft: 5,
+    // marginLeft: 5,
     flex: 1,
     shadowColor: 'rgba(0, 0, 0, 0.5)',
     shadowOffset: {width: 1, height: 0},

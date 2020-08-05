@@ -14,6 +14,7 @@ import StarSVG from 'assets/icons/star.svg';
 import ShareSVG from 'assets/icons/share.svg';
 import ArchitectureSVG from 'assets/icons/architecture.svg';
 import HomeSVG from 'assets/icons/home.svg';
+import {persianNumber} from 'utils/persianNumber';
 
 interface IProps {
   id: string;
@@ -25,15 +26,12 @@ export const AdDetail: React.FC<IProps> = (props) => {
     area: 200,
     code: '213',
     created: new Date(),
-    desc: 'desccccccccccccccccc',
-    distinct: 'sadasd',
     isBookmarked: true,
     isStared: true,
-    name: 'asdasda',
+    name: 'فروش یک آپارتمان ۲۰۰ متری',
     neighbourhood: 'sadasdas',
     options: null,
     post_type: 'RENT',
-    images: [],
     price: 100000000,
     price2: 0,
     property_type: 'APARTMENT',
@@ -45,7 +43,24 @@ export const AdDetail: React.FC<IProps> = (props) => {
       last_name: 'Nazari',
       phone: '09012895868',
     },
-    visit_time: new Date(),
+    visit_time: {
+      start: {
+        from: 9,
+        to: 1,
+      },
+      end: {
+        from: 4,
+        to: 8,
+      },
+    },
+
+    desc: 'توضیحاااات ',
+    images: [
+      'https://unsplash.com/photos/4TBSG2Oqu0Q/download?force=true&w=640',
+      'https://unsplash.com/photos/VuatLT0MkQE/download?force=true&w=640',
+      'https://unsplash.com/photos/FytRPOMijMA/download?force=true&w=640',
+    ],
+    distinct: 'هاشمیه',
   });
 
   useEffect(() => {
@@ -187,9 +202,13 @@ export const AdDetail: React.FC<IProps> = (props) => {
                       justifyContent: 'space-between',
                       flexDirection: 'row',
                     }}>
-                    <Text style={styles.clockTextinput}></Text>
+                    <Text style={styles.clockTextinput}>
+                      {persianNumber(ad.visit_time?.start?.from)}
+                    </Text>
                     <Text>تا</Text>
-                    <Text style={styles.clockTextinput}></Text>
+                    <Text style={styles.clockTextinput}>
+                      {persianNumber(ad.visit_time?.start?.to)}
+                    </Text>
                   </View>
                 </View>
                 <View
@@ -224,9 +243,13 @@ export const AdDetail: React.FC<IProps> = (props) => {
                       justifyContent: 'space-between',
                       flexDirection: 'row',
                     }}>
-                    <Text style={styles.clockTextinput}></Text>
+                    <Text style={styles.clockTextinput}>
+                      {persianNumber(ad.visit_time?.end?.from)}
+                    </Text>
                     <Text>تا</Text>
-                    <Text style={styles.clockTextinput}></Text>
+                    <Text style={styles.clockTextinput}>
+                      {persianNumber(ad.visit_time?.end?.to)}
+                    </Text>
                   </View>
                 </View>
               </View>
@@ -431,7 +454,16 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
   },
-  imageItemWrapper: {position: 'relative', paddingRight: 6},
+  imageItemWrapper: {
+    width: '100%',
+    height: '100%',
+    position: 'relative',
+    // paddingRight: 6,
+
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   dot: {
     backgroundColor: '#8b8b8b',
     width: 21,
@@ -448,8 +480,19 @@ const styles = StyleSheet.create({
     marginRight: 2,
     marginBottom: -45,
   },
-  starStyle: {},
-  imageStyle: {},
+  starStyle: {
+    position: 'absolute',
+    top: 5,
+    zIndex: 100,
+    right: 20,
+  },
+  imageStyle: {
+    width: '100%',
+    height: '100%',
+    borderTopRightRadius: 5,
+    borderTopLeftRadius: 5,
+    alignSelf: 'center',
+  },
   titleWrapper: {
     width: '100%',
     backgroundColor: '#fff',
