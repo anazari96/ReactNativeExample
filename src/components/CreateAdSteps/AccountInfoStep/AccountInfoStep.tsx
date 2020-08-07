@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useState, useCallback} from 'react';
 import {
   ScrollView,
@@ -18,10 +19,13 @@ import WarningSVG from 'assets/icons/warning.svg';
 import CameraSVG from 'assets/icons/camera.svg';
 import {MainColor, borderShadowStyle} from 'constants/variables';
 import {IAds} from 'models/GeneralModels';
+import {api} from 'utils/api';
 
 interface IProps {
-  ad: any;
+  state: any;
   nextStep: (v: IAds) => void;
+  addToState: (key: string, value: any) => void;
+  removeToState: (key: string) => void;
 }
 
 export const AccountInfoStep: React.FC<IProps> = (props) => {
@@ -47,12 +51,25 @@ export const AccountInfoStep: React.FC<IProps> = (props) => {
           } else {
             const source = {uri: response.uri};
 
+            const data = new FormData();
+            data.append('file', response.data);
+
+            api
+              .post('/uploadfile/', data)
+              .then((res) => {
+                console.log('res', res);
+                if (res.ok) {
+                  setPictures({...pictures, [i]: {source, id: res.data}});
+                } else {
+                  throw res.problem;
+                }
+              })
+              .catch((err) => {
+                console.log('err', err);
+              });
+
             // You can also display the image using data:
             // const source = { uri: 'data:image/jpeg;base64,' + response.data };
-
-            const tmpPic = Object.assign({}, pictures);
-            tmpPic[i] = source;
-            setPictures(tmpPic);
           }
         },
       );
@@ -99,7 +116,7 @@ export const AccountInfoStep: React.FC<IProps> = (props) => {
                     ]}>
                     {pictures[1] ? (
                       <Image
-                        source={pictures[1]}
+                        source={pictures[1].source}
                         style={{
                           width: '100%',
                           aspectRatio: 1,
@@ -121,7 +138,7 @@ export const AccountInfoStep: React.FC<IProps> = (props) => {
                     ]}>
                     {pictures[2] ? (
                       <Image
-                        source={pictures[2]}
+                        source={pictures[2].source}
                         style={{
                           width: '100%',
                           aspectRatio: 1,
@@ -143,7 +160,7 @@ export const AccountInfoStep: React.FC<IProps> = (props) => {
                     ]}>
                     {pictures[3] ? (
                       <Image
-                        source={pictures[3]}
+                        source={pictures[3].source}
                         style={{
                           width: '100%',
                           aspectRatio: 1,
@@ -166,7 +183,7 @@ export const AccountInfoStep: React.FC<IProps> = (props) => {
                   ]}>
                   {pictures[4] ? (
                     <Image
-                      source={pictures[4]}
+                      source={pictures[4].source}
                       style={{
                         width: '100%',
                         aspectRatio: 1,
@@ -189,7 +206,7 @@ export const AccountInfoStep: React.FC<IProps> = (props) => {
                     ]}>
                     {pictures[5] ? (
                       <Image
-                        source={pictures[5]}
+                        source={pictures[5].source}
                         style={{
                           width: '100%',
                           aspectRatio: 1,
@@ -211,7 +228,7 @@ export const AccountInfoStep: React.FC<IProps> = (props) => {
                     ]}>
                     {pictures[6] ? (
                       <Image
-                        source={pictures[6]}
+                        source={pictures[6].source}
                         style={{
                           width: '100%',
                           aspectRatio: 1,
@@ -233,7 +250,7 @@ export const AccountInfoStep: React.FC<IProps> = (props) => {
                     ]}>
                     {pictures[7] ? (
                       <Image
-                        source={pictures[7]}
+                        source={pictures[7].source}
                         style={{
                           width: '100%',
                           aspectRatio: 1,
@@ -264,7 +281,7 @@ export const AccountInfoStep: React.FC<IProps> = (props) => {
                   ]}>
                   {pictures[8] ? (
                     <Image
-                      source={pictures[8]}
+                      source={pictures[8].source}
                       style={{
                         width: '100%',
                         aspectRatio: 1,
@@ -286,7 +303,7 @@ export const AccountInfoStep: React.FC<IProps> = (props) => {
                   ]}>
                   {pictures[9] ? (
                     <Image
-                      source={pictures[9]}
+                      source={pictures[9].source}
                       style={{
                         width: '100%',
                         aspectRatio: 1,
@@ -308,7 +325,7 @@ export const AccountInfoStep: React.FC<IProps> = (props) => {
                   ]}>
                   {pictures[10] ? (
                     <Image
-                      source={pictures[10]}
+                      source={pictures[10].source}
                       style={{
                         width: '100%',
                         aspectRatio: 1,

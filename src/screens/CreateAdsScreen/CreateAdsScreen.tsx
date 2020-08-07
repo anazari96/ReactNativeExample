@@ -1,7 +1,11 @@
-import React, {useMemo, useState, useCallback, useEffect} from 'react';
-import {View, StyleSheet, Pressable, Text} from 'react-native';
-import {useForm, Controller, FormProvider} from 'react-hook-form';
-import {yupResolver} from '@hookform/resolvers';
+import React, {
+  useMemo,
+  useState,
+  useCallback,
+  useReducer,
+  useEffect,
+} from 'react';
+import {View, StyleSheet} from 'react-native';
 import * as yup from 'yup';
 
 import CreateAdProgress from 'components/CreateAdProgress';
@@ -9,7 +13,8 @@ import HouseInfoStep from 'components/CreateAdSteps/HouseInfoStep';
 import AccountInfoStep from 'components/CreateAdSteps/AccountInfoStep';
 import FinalInfoStep from 'components/CreateAdSteps/FinalInfoStep';
 import {MainColor} from 'constants/variables';
-import {IAds} from 'models/GeneralModels';
+import {IAds, IAction} from 'models/GeneralModels';
+import {sub} from 'react-native-reanimated';
 
 interface IProps {}
 
@@ -37,6 +42,7 @@ interface FormData {
 const schema = yup.object({
   address: yup.string().required(),
   area: yup.number().min(1).required(),
+  age: yup.number().required(),
   distinct: yup.string().required(),
   name: yup.string().required(),
   neighbourhood: yup.string().required(),
@@ -55,72 +61,155 @@ const schema = yup.object({
   }),
 });
 
+const initialState = {
+  address: '',
+  area: 0,
+  age: undefined,
+  desc: '',
+  distinct: '',
+  images: undefined,
+  name: '',
+  neighbourhood: '',
+  post_type: 'SELL',
+  price: undefined,
+  price2: undefined,
+  property_type: 'HOUSE',
+  rooms: 0,
+  user: undefined,
+  visit_time: undefined,
+  map: undefined,
+};
+
+const reducer = (state = initialState, action: IAction) => {
+  switch (action.type) {
+    case 'SET':
+      return {...state, [action.payload.key]: action.payload.value};
+    case 'REMOVE':
+      return {...state, [action.payload.key]: undefined};
+    case 'REMOVE_LIST':
+      const t = action.payload.reduce((p, c, i) => ({...p, ...c}));
+
+      return {...state, ...t};
+    default:
+      return state;
+  }
+};
+
 export const CreateAdsScreen: React.FC<IProps> = (props) => {
   const [step, setStep] = useState<number>(1);
-  const [ad, setAd] = useState({});
-  const methods = useForm<FormData>({
-    defaultValues: {
-      address: '',
-      area: 0,
-      desc: '',
-      distinct: '',
-      images: undefined,
-      name: '',
-      neighbourhood: '',
-      post_type: 'SELL',
-      price: 0,
-      price2: 0,
-      property_type: 'HOUSE',
-      rooms: 0,
-      user: undefined,
-      visit_time: undefined,
-      map: undefined,
-    },
-    resolver: yupResolver(schema),
-  });
+
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
-    console.log('watch', methods.watch('map'), methods.getValues('map'));
-  }, [methods.watch('map'), methods.getValues('map')]);
+    console.log('state', state);
+  }, [state]);
 
-  const nextStep = useCallback(
-    (v: IAds) => {
-      setAd(v);
-      if (step !== 3) {
-        setStep(step + 1);
-      } else {
-        setStep(1);
-      }
-    },
-    [step],
-  );
+  // const methods = useForm<FormData>({
+  //   defaultValues: {
+  //     address: '',
+  //     area: 0,
+  //     desc: '',
+  //     distinct: '',
+  //     images: undefined,
+  //     name: '',
+  //     neighbourhood: '',
+  //     post_type: 'SELL',
+  //     price: 0,
+  //     price2: 0,
+  //     property_type: 'HOUSE',
+  //     rooms: 0,
+  //     user: undefined,
+  //     visit_time: undefined,
+  //     map: undefined,
+  //   },
+  //   resolver: yupResolver(schema),
+  // });
+
+  // useEffect(() => {
+  //   console.log('watch', methods.watch('map'), methods.getValues('map'));
+  // }, [methods.watch('map'), methods.getValues('map')]);
+
+  const submit = useCallback(() => {
+    schema
+      .isValid(state)
+      .then((r) => {
+        console.log('r', r);
+      })
+      .catch((err) => {
+        console.log('err', err);
+      });
+  }, [state]);
+
+  const nextStep = useCallback(() => {
+    if (step !== 3) {
+      setStep(step + 1);
+    } else {
+      setStep(1);
+      submit();
+    }
+  }, [step, submit]);
+
+  const addToState = useCallback((key: string, value: any) => {
+    dispatch({type: 'SET', payload: {key, value}});
+  }, []);
+
+  const removeToState = useCallback((key: string) => {
+    dispatch({type: 'REMOVE', payload: {key}});
+  }, []);
+
+  const removeListToState = useCallback((keys: string[]) => {
+    dispatch({
+      type: 'REMOVE_LIST',
+      payload: keys.map((v) => ({[v]: undefined})),
+    });
+  }, []);
 
   const renderSteps = useMemo(() => {
     switch (step) {
       case 1:
-        return <HouseInfoStep nextStep={nextStep} ad={ad} />;
+        return (
+          <HouseInfoStep
+            nextStep={nextStep}
+            state={state}
+            addToState={addToState}
+            removeToState={removeToState}
+            removeListToState={removeListToState}
+          />
+        );
       case 2:
-        return <AccountInfoStep nextStep={nextStep} ad={ad} />;
+        return (
+          <AccountInfoStep
+            nextStep={nextStep}
+            state={state}
+            addToState={addToState}
+            removeToState={removeToState}
+          />
+        );
       case 3:
-        return <FinalInfoStep nextStep={nextStep} ad={ad} />;
+        return (
+          <FinalInfoStep
+            nextStep={nextStep}
+            state={state}
+            addToState={addToState}
+            removeToState={removeToState}
+          />
+        );
       default:
         return null;
     }
-  }, [step, ad, nextStep]);
+  }, [step, nextStep, state, addToState, removeToState, removeListToState]);
 
   // useEffect(() => {
   //   console.log('jj', methods.watch('distinct'));
   // }, [methods, methods.watch('distinct')]);
 
   return (
-    <FormProvider {...methods}>
-      <View style={styles.container}>
-        <View style={styles.progressWrapper}>
-          <CreateAdProgress step={step} />
-        </View>
-        {renderSteps}
+    <View style={styles.container}>
+      <View style={styles.progressWrapper}>
+        <CreateAdProgress step={step} />
       </View>
-    </FormProvider>
+      {renderSteps}
+    </View>
   );
 };
 

@@ -17,8 +17,10 @@ import {IAds} from 'models/GeneralModels';
 import {useNavigation} from '@react-navigation/native';
 
 interface IProps {
-  ad: any;
+  state: any;
   nextStep: (v: IAds) => void;
+  addToState: (key: string, value: any) => void;
+  removeToState: (key: string) => void;
 }
 
 export const FinalInfoStep: React.FC<IProps> = (props) => {

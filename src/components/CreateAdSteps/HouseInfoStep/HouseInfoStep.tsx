@@ -1,70 +1,63 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState, useEffect, useMemo, useCallback} from 'react';
+import React, {useState, useMemo, useCallback, useEffect} from 'react';
 import {ScrollView} from 'react-native-gesture-handler';
 import {View, Text, StyleSheet, TextInput, Pressable} from 'react-native';
 import {Picker} from '@react-native-community/picker';
+import {LatLng} from 'react-native-maps';
 import usePromise from 'react-promise';
 import {ApiResponse} from 'apisauce';
 
-import StarSVG from '../../../assets/icons/star.svg';
-import WarningSVG from '../../../assets/icons/warning.svg';
+import StarSVG from 'assets/icons/star.svg';
+import WarningSVG from 'assets/icons/warning.svg';
 
-import InputWrapper from '../../InputWrapper';
-import {MainColor} from '../../../constants/variables';
-import {api} from '../../../utils/api';
-import {MapView} from '../../MapView/MapView';
-import {Seprator} from '../../../components/Seprator/Seprator';
-import {IAds} from 'models/GeneralModels';
-import {useFormContext, Controller} from 'react-hook-form';
+import InputWrapper from 'components/InputWrapper';
+import MapView from 'components/MapView';
+import {Seprator} from 'components/Seprator/Seprator';
+import {MainColor} from 'constants/variables';
+import {api} from 'utils/api';
+
 import {SelectMapStep} from './SelectMapStep';
-import {LatLng} from 'react-native-maps';
+import {add} from 'react-native-reanimated';
 
 interface IProps {
-  ad: any;
-  nextStep: (v: IAds) => void;
+  state: any;
+  nextStep: () => void;
+  addToState: (key: string, value: any) => void;
+  removeToState: (key: string) => void;
+  removeListToState: (keys: string[]) => void;
 }
 
 export const HouseInfoStep: React.FC<IProps> = (props) => {
-  const [tmpAd, setTmpAd] = useState(props.ad);
+  const {addToState, removeListToState, state} = props;
+
   const [steps, setSteps] = useState<1 | 2 | 'map'>(1);
-  const [type, setType] = useState<'SELL' | 'RENT'>('SELL');
-  const [selectedNeighbor, setSelectedNeighbor] = useState<
-    string | undefined
+  const [neighboursOptions, setNeighboursOptions] = useState<
+    any[] | undefined
   >();
 
-  const {control, handleSubmit, errors, getValues, setValue} = useFormContext();
-
-  const {value: neighborsValue, loading: neighborsLoading} = usePromise<
-    ApiResponse<any, any>
-  >(api.get('/neighbors'));
-
-  const NeighborhoodsOptions = useMemo(() => {
-    if (neighborsValue?.ok) {
-      return neighborsValue?.data;
-    }
-    return null;
-  }, [neighborsValue]);
-
   useEffect(() => {
-    setTmpAd(props.ad);
-  }, [props.ad]);
-
-  // useEffect(() => {
-  //   if (steps === 3) {
-  //     props.setStep(2);
-  //   }
-  // }, [steps, props]);
+    api
+      .get('/neighbours')
+      .then((resp) => {
+        if (resp.ok) {
+          setNeighboursOptions(resp.data as any);
+        }
+      })
+      .catch((err) => {
+        console.log('err', err);
+      });
+  }, []);
 
   const setLocation = useCallback(
     (v: LatLng) => {
       if (v) {
         console.log('v', v);
 
-        setValue('map', v, {shouldValidate: true});
+        addToState('map', v);
       }
       setSteps(1);
     },
-    [setValue],
+    [addToState],
   );
 
   const renderedStep = useMemo(() => {
@@ -125,34 +118,25 @@ export const HouseInfoStep: React.FC<IProps> = (props) => {
                   </Picker>
                 </InputWrapper>
                 <InputWrapper title="انتخاب منطقه و محله" required={true}>
-                  <Controller
-                    name="distinct"
-                    render={({onChange, value}) => (
-                      <Picker
-                        enabled={!neighborsLoading}
-                        style={styles.picker}
-                        selectedValue={value}
-                        onValueChange={onChange}>
-                        {NeighborhoodsOptions?.map((v) => (
-                          <Picker.Item label={v.title} value={v.key} />
-                        ))}
-                      </Picker>
-                    )}
-                    control={control}
-                  />
+                  <Picker
+                    enabled={!neighboursOptions}
+                    style={styles.picker}
+                    selectedValue={state.distinct}
+                    onValueChange={(text) => addToState('distinct', text)}>
+                    {neighboursOptions?.map((v) => (
+                      <Picker.Item label={v.title} value={v.key} />
+                    ))}
+                  </Picker>
                 </InputWrapper>
                 <View style={styles.mapWrapper}>
                   <Pressable
                     onPress={() => {
                       setSteps('map');
-                    }}
-                    onTouchMove={() => {
-                      // setSteps('map');
                     }}>
                     <MapView
                       showUserLocation={false}
                       markers={
-                        getValues('map') ? [getValues('map')] : undefined
+                        state?.map ? [{cord: state?.map, id: 0}] : undefined
                       }
                     />
                   </Pressable>
@@ -160,17 +144,10 @@ export const HouseInfoStep: React.FC<IProps> = (props) => {
                 <InputWrapper
                   title="آدرس دقیق خود را وارد کنید"
                   required={true}>
-                  <Controller
-                    name="address"
-                    control={control}
-                    render={({onChange, onBlur, value}) => (
-                      <TextInput
-                        onChangeText={onChange}
-                        onBlur={onBlur}
-                        value={value}
-                        style={{backgroundColor: '#fff', textAlign: 'right'}}
-                      />
-                    )}
+                  <TextInput
+                    onChangeText={(text) => addToState('address', text)}
+                    value={state.address}
+                    style={{backgroundColor: '#fff', textAlign: 'right'}}
                   />
                 </InputWrapper>
               </View>
@@ -200,22 +177,27 @@ export const HouseInfoStep: React.FC<IProps> = (props) => {
                   <Pressable
                     style={[
                       styles.typeButton,
-                      {backgroundColor: type === 'SELL' ? MainColor : '#fff'},
+                      {
+                        backgroundColor:
+                          state.post_type === 'SELL' ? MainColor : '#fff',
+                      },
                     ]}
                     onPress={() => {
-                      setType('SELL');
+                      addToState('post_type', 'SELL');
+                      removeListToState(['price', 'price2']);
                     }}>
                     <Text style={styles.buttonText}>فروش</Text>
                   </Pressable>
                   <Pressable
                     style={[
                       styles.typeButton,
-                      type === 'RENT'
+                      state.post_type === 'RENT'
                         ? {backgroundColor: MainColor}
                         : {backgroundColor: '#fff'},
                     ]}
                     onPress={() => {
-                      setType('RENT');
+                      addToState('post_type', 'RENT');
+                      removeListToState(['price', 'price2']);
                     }}>
                     <Text style={styles.buttonText}>رهن و اجاره</Text>
                   </Pressable>
@@ -223,7 +205,7 @@ export const HouseInfoStep: React.FC<IProps> = (props) => {
                 <Seprator />
 
                 <View style={styles.costWrapper}>
-                  {type === 'SELL' ? (
+                  {state.post_type === 'SELL' ? (
                     <View
                       style={{
                         display: 'flex',
@@ -244,16 +226,22 @@ export const HouseInfoStep: React.FC<IProps> = (props) => {
                         <TextInput
                           style={[styles.textInput, styles.borderShadowStyle]}
                           placeholder="۸۰۰/۰۰۰/۰۰۰"
+                          value={state?.price}
+                          onChangeText={(text) => addToState('price', text)}
                         />
                         <Pressable
                           style={[
                             {
                               height: 36,
                               width: 100,
-                              backgroundColor: '#fff',
+                              backgroundColor:
+                                state.price === 0 ? MainColor : '#fff',
                             },
                             styles.borderShadowStyle,
-                          ]}>
+                          ]}
+                          onPress={() => {
+                            addToState('price', 0);
+                          }}>
                           <Text style={styles.buttonText}>توافقی</Text>
                         </Pressable>
                       </InputWrapper>
@@ -279,16 +267,22 @@ export const HouseInfoStep: React.FC<IProps> = (props) => {
                         <TextInput
                           style={[styles.textInput, styles.borderShadowStyle]}
                           placeholder="۸۰۰/۰۰۰/۰۰۰"
+                          value={state?.price}
+                          onChangeText={(text) => addToState('price', text)}
                         />
                         <Pressable
                           style={[
                             {
                               height: 36,
                               width: 100,
-                              backgroundColor: '#fff',
+                              backgroundColor:
+                                state.price === 0 ? MainColor : '#fff',
                             },
                             styles.borderShadowStyle,
-                          ]}>
+                          ]}
+                          onPress={() => {
+                            addToState('price', 0);
+                          }}>
                           <Text style={styles.buttonText}>توافقی</Text>
                         </Pressable>
                       </InputWrapper>
@@ -305,16 +299,22 @@ export const HouseInfoStep: React.FC<IProps> = (props) => {
                         <TextInput
                           style={[styles.textInput, styles.borderShadowStyle]}
                           placeholder="۱/۰۰۰/۰۰۰"
+                          value={state?.price2}
+                          onChangeText={(text) => addToState('price2', text)}
                         />
                         <Pressable
                           style={[
                             {
                               height: 36,
                               width: 100,
-                              backgroundColor: '#fff',
+                              backgroundColor:
+                                state.price2 === 0 ? MainColor : '#fff',
                             },
                             styles.borderShadowStyle,
-                          ]}>
+                          ]}
+                          onPress={() => {
+                            addToState('price2', 0);
+                          }}>
                           <Text style={styles.buttonText}>رهن کامل</Text>
                         </Pressable>
                       </InputWrapper>
@@ -336,6 +336,8 @@ export const HouseInfoStep: React.FC<IProps> = (props) => {
                     <TextInput
                       style={[styles.textInput, styles.borderShadowStyle]}
                       placeholder="۱۵۰"
+                      value={state?.area}
+                      onChangeText={(text) => addToState('area', text)}
                     />
                   </InputWrapper>
                 </View>
@@ -355,47 +357,51 @@ export const HouseInfoStep: React.FC<IProps> = (props) => {
                     <TextInput
                       style={[styles.textInput, styles.borderShadowStyle]}
                       placeholder="۱۰"
+                      value={state?.age}
+                      onChangeText={(text) => addToState('age', text)}
                     />
                     <Pressable
                       style={[
                         {
                           height: 36,
                           width: 100,
-                          backgroundColor: '#fff',
+                          backgroundColor: state.age === 0 ? MainColor : '#fff',
                         },
                         styles.borderShadowStyle,
-                      ]}>
+                      ]}
+                      onPress={() => {
+                        addToState('age', 0);
+                      }}>
                       <Text style={styles.buttonText}>نوساز</Text>
                     </Pressable>
                   </InputWrapper>
                 </View>
-
-                {/* <View style={styles.submitWrapper}>
-                <Pressable
-                  style={styles.submitBtn}
-                  onPress={() => {
-                    setSteps(steps + 1);
-                  }}>
-                  <Text style={styles.submitText}>ادامه</Text>
-                </Pressable>
-              </View> */}
               </View>
             </View>
           </ScrollView>
         );
-      case 'map':
+      case 'map': {
         return (
           <View style={{width: '100%'}}>
             <SelectMapStep setLocation={setLocation} />
           </View>
         );
+      }
+      default:
+        return null;
     }
-  }, [steps, NeighborhoodsOptions, neighborsLoading, type, control]);
+  }, [
+    steps,
+    neighboursOptions,
+    setLocation,
+    addToState,
+    state,
+    removeListToState,
+  ]);
 
   return (
     <>
       {renderedStep}
-
       {steps !== 'map' ? (
         <View style={styles.submitWrapper}>
           <Pressable
@@ -404,7 +410,7 @@ export const HouseInfoStep: React.FC<IProps> = (props) => {
               if (steps === 1) {
                 setSteps(2);
               } else {
-                props.nextStep(tmpAd);
+                props.nextStep();
               }
             }}>
             <Text style={styles.submitText}>ادامه</Text>

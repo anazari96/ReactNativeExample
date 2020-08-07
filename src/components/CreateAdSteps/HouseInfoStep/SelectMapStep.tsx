@@ -21,9 +21,7 @@ export const SelectMapStep: React.FC<IProps> = (props) => {
       </View>
       <View style={styles.mapWrapper}>
         <MapView
-          markers={
-            location ? [{cord: {...location} as Region, id: 0}] : undefined
-          }
+          markers={location ? [{cord: location as Region, id: 0}] : undefined}
           selectLocationEnabled={true}
           selectLocation={setLocation}
         />
