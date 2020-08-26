@@ -14,7 +14,8 @@ import AccountInfoStep from 'components/CreateAdSteps/AccountInfoStep';
 import FinalInfoStep from 'components/CreateAdSteps/FinalInfoStep';
 import {MainColor} from 'constants/variables';
 import {IAds, IAction} from 'models/GeneralModels';
-import {sub} from 'react-native-reanimated';
+import {api} from 'utils/api';
+import {useNavigation} from '@react-navigation/native';
 
 interface IProps {}
 
@@ -23,6 +24,7 @@ interface FormData {
   images: string[];
   post_type: 'SELL' | 'RENT';
   property_type: 'HOUSE' | 'APARTMENT';
+  account_type: 'RESIDENTAL' | 'COMMERCIAL' | 'OFFICIAL' | 'INDUTRIAL';
   area: number;
   price: number;
   price2: number;
@@ -45,15 +47,19 @@ const schema = yup.object({
   age: yup.number().required(),
   distinct: yup.string().required(),
   name: yup.string().required(),
-  neighbourhood: yup.string().required(),
+  neighbourhood: yup.string(),
   post_type: yup.string().required().equals(['SELL', 'RENT']),
   price: yup.number().min(0).required(),
   price2: yup.number().min(0).default(0),
   property_type: yup.string().required().equals(['HOUSE', 'APARTMENT']),
+  account_type: yup
+    .string()
+    .required()
+    .equals(['RESIDENTAL', 'COMMERCIAL', 'OFFICIAL', 'INDUTRIAL']),
   rooms: yup.number().min(0).required(),
   user: yup.object({
-    first_name: yup.string().required(),
-    last_name: yup.string().required(),
+    first_name: yup.string(),
+    last_name: yup.string(),
   }),
   map: yup.object({
     latitude: yup.number(),
@@ -62,14 +68,14 @@ const schema = yup.object({
 });
 
 const initialState = {
-  address: '',
+  address: undefined,
   area: 0,
   age: undefined,
-  desc: '',
-  distinct: '',
+  desc: undefined,
+  distinct: undefined,
   images: undefined,
-  name: '',
-  neighbourhood: '',
+  name: undefined,
+  neighbourhood: undefined,
   post_type: 'SELL',
   price: undefined,
   price2: undefined,
@@ -83,6 +89,17 @@ const initialState = {
 const reducer = (state = initialState, action: IAction) => {
   switch (action.type) {
     case 'SET':
+      if ((action.payload.key as string).includes('.')) {
+        const keys = (action.payload.key as string).split('.');
+        if (state[keys[0]]) {
+          return {
+            ...state,
+            [keys[0]]: {...state[keys[0]], [keys[1]]: action.payload.value},
+          };
+        } else {
+          return {...state, [keys[0]]: {[keys[1]]: action.payload.value}};
+        }
+      }
       return {...state, [action.payload.key]: action.payload.value};
     case 'REMOVE':
       return {...state, [action.payload.key]: undefined};
@@ -90,6 +107,8 @@ const reducer = (state = initialState, action: IAction) => {
       const t = action.payload.reduce((p, c, i) => ({...p, ...c}));
 
       return {...state, ...t};
+    case 'INIT':
+      return initialState;
     default:
       return state;
   }
@@ -97,8 +116,9 @@ const reducer = (state = initialState, action: IAction) => {
 
 export const CreateAdsScreen: React.FC<IProps> = (props) => {
   const [step, setStep] = useState<number>(1);
-
+  const navigation = useNavigation();
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [submitLoading, setSubmitLoading] = useState(false);
 
   useEffect(() => {
     console.log('state', state);
@@ -129,22 +149,47 @@ export const CreateAdsScreen: React.FC<IProps> = (props) => {
   //   console.log('watch', methods.watch('map'), methods.getValues('map'));
   // }, [methods.watch('map'), methods.getValues('map')]);
 
-  const submit = useCallback(() => {
-    schema
-      .isValid(state)
-      .then((r) => {
-        console.log('r', r);
-      })
-      .catch((err) => {
-        console.log('err', err);
-      });
-  }, [state]);
+  const cleanup = useCallback(
+    (success: boolean) => {
+      setSubmitLoading(false);
+      setStep(1);
+      if (success) {
+        dispatch({type: 'INIT', payload: null});
+
+        navigation.navigate('Feed');
+      }
+    },
+    [navigation],
+  );
+
+  const submit = useCallback(async () => {
+    try {
+      setSubmitLoading(true);
+      const r = await schema.isValid(state);
+      console.log('r', r, state);
+      if (r) {
+        const resp = await api.post('/post', state);
+
+        if (resp.ok) {
+          console.log('resp', resp.data);
+          cleanup(true);
+        } else {
+          throw resp.problem;
+        }
+      } else {
+        throw 'error';
+      }
+    } catch (err) {
+      console.log('err', err);
+      cleanup(true);
+    }
+  }, [state, cleanup]);
 
   const nextStep = useCallback(() => {
     if (step !== 3) {
       setStep(step + 1);
     } else {
-      setStep(1);
+      // setStep(1);
       submit();
     }
   }, [step, submit]);
@@ -192,12 +237,21 @@ export const CreateAdsScreen: React.FC<IProps> = (props) => {
             state={state}
             addToState={addToState}
             removeToState={removeToState}
+            loading={submitLoading}
           />
         );
       default:
         return null;
     }
-  }, [step, nextStep, state, addToState, removeToState, removeListToState]);
+  }, [
+    step,
+    nextStep,
+    state,
+    addToState,
+    removeToState,
+    removeListToState,
+    submitLoading,
+  ]);
 
   // useEffect(() => {
   //   console.log('jj', methods.watch('distinct'));
@@ -206,7 +260,7 @@ export const CreateAdsScreen: React.FC<IProps> = (props) => {
   return (
     <View style={styles.container}>
       <View style={styles.progressWrapper}>
-        <CreateAdProgress step={step} />
+        <CreateAdProgress step={step} setStep={setStep} />
       </View>
       {renderSteps}
     </View>

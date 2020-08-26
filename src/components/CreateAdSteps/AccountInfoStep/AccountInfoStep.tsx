@@ -17,7 +17,7 @@ import InputWrapper from 'components/InputWrapper';
 
 import WarningSVG from 'assets/icons/warning.svg';
 import CameraSVG from 'assets/icons/camera.svg';
-import {MainColor, borderShadowStyle} from 'constants/variables';
+import {MainColor, borderShadowStyle, StrokeColor} from 'constants/variables';
 import {IAds} from 'models/GeneralModels';
 import {api} from 'utils/api';
 
@@ -29,6 +29,7 @@ interface IProps {
 }
 
 export const AccountInfoStep: React.FC<IProps> = (props) => {
+  const {addToState, state} = props;
   const [pictures, setPictures] = useState<any>({});
 
   const openPicturePicker = useCallback(
@@ -350,17 +351,77 @@ export const AccountInfoStep: React.FC<IProps> = (props) => {
               flexDirection: 'row',
               flexWrap: 'wrap',
             }}>
-            <Pressable style={styles.button}>
-              <Text style={styles.buttonText}>مسکونی</Text>
+            <Pressable
+              style={styles.button}
+              onPress={() => {
+                addToState('account_type', 'RESIDENTAL');
+              }}>
+              <Text
+                style={[
+                  styles.buttonText,
+                  {
+                    color:
+                      state.account_type === 'RESIDENTAL'
+                        ? MainColor
+                        : StrokeColor,
+                  },
+                ]}>
+                مسکونی
+              </Text>
             </Pressable>
-            <Pressable style={styles.button}>
-              <Text style={styles.buttonText}>تجاری</Text>
+            <Pressable
+              style={styles.button}
+              onPress={() => {
+                addToState('account_type', 'COMMERCIAL');
+              }}>
+              <Text
+                style={[
+                  styles.buttonText,
+                  {
+                    color:
+                      state.account_type === 'COMMERCIAL'
+                        ? MainColor
+                        : StrokeColor,
+                  },
+                ]}>
+                تجاری
+              </Text>
             </Pressable>
-            <Pressable style={styles.button}>
-              <Text style={styles.buttonText}>اداری</Text>
+            <Pressable
+              style={styles.button}
+              onPress={() => {
+                addToState('account_type', 'OFFICIAL');
+              }}>
+              <Text
+                style={[
+                  styles.buttonText,
+                  {
+                    color:
+                      state.account_type === 'OFFICIAL'
+                        ? MainColor
+                        : StrokeColor,
+                  },
+                ]}>
+                اداری
+              </Text>
             </Pressable>
-            <Pressable style={styles.button}>
-              <Text style={styles.buttonText}>صنعتی</Text>
+            <Pressable
+              style={styles.button}
+              onPress={() => {
+                addToState('account_type', 'INDUTRIAL');
+              }}>
+              <Text
+                style={[
+                  styles.buttonText,
+                  {
+                    color:
+                      state.account_type === 'INDUTRIAL'
+                        ? MainColor
+                        : StrokeColor,
+                  },
+                ]}>
+                صنعتی
+              </Text>
             </Pressable>
           </InputWrapper>
           <Seprator />
@@ -374,12 +435,41 @@ export const AccountInfoStep: React.FC<IProps> = (props) => {
               flexDirection: 'row',
               flexWrap: 'wrap',
             }}>
-            <Pressable style={styles.button}>
-              <Text style={styles.buttonText}>آپارتمان</Text>
+            <Pressable
+              style={styles.button}
+              onPress={() => {
+                addToState('property_type', 'APARTMENT');
+              }}>
+              <Text
+                style={[
+                  styles.buttonText,
+                  {
+                    color:
+                      state.property_type === 'APARTMENT'
+                        ? MainColor
+                        : StrokeColor,
+                  },
+                ]}>
+                آپارتمان
+              </Text>
             </Pressable>
-            <Pressable style={styles.button}>
-              <Text style={styles.buttonText}>ویلایی</Text>
+            <Pressable
+              style={styles.button}
+              onPress={() => {
+                addToState('property_type', 'HOUSE');
+              }}>
+              <Text
+                style={[
+                  styles.buttonText,
+                  {
+                    color:
+                      state.property_type === 'HOUSE' ? MainColor : StrokeColor,
+                  },
+                ]}>
+                ویلایی
+              </Text>
             </Pressable>
+            {/* 
             <Pressable style={styles.button}>
               <Text style={styles.buttonText}>زمین/کلنگی</Text>
             </Pressable>
@@ -391,7 +481,7 @@ export const AccountInfoStep: React.FC<IProps> = (props) => {
             </Pressable>
             <Pressable style={styles.button}>
               <Text style={styles.buttonText}>سوییت</Text>
-            </Pressable>
+            </Pressable> */}
           </InputWrapper>
           <Seprator />
           <InputWrapper
@@ -405,23 +495,119 @@ export const AccountInfoStep: React.FC<IProps> = (props) => {
               flexDirection: 'row',
               flexWrap: 'wrap',
             }}>
-            <Pressable style={styles.roomButton}>
-              <Text style={styles.buttonText}>۰</Text>
+            <Pressable
+              style={[
+                styles.roomButton,
+                {
+                  borderColor:
+                    state.rooms === 0 ? MainColor : 'rgba(112, 112, 112, 0.5)',
+                },
+              ]}
+              onPress={() => {
+                addToState('rooms', 0);
+              }}>
+              <Text
+                style={[
+                  styles.buttonText,
+                  {color: state.rooms === 0 ? MainColor : StrokeColor},
+                ]}>
+                ۰
+              </Text>
             </Pressable>
-            <Pressable style={styles.roomButton}>
-              <Text style={styles.buttonText}>1</Text>
+            <Pressable
+              style={[
+                styles.roomButton,
+                {
+                  borderColor:
+                    state.rooms === 1 ? MainColor : 'rgba(112, 112, 112, 0.5)',
+                },
+              ]}
+              onPress={() => {
+                addToState('rooms', 1);
+              }}>
+              <Text
+                style={[
+                  styles.buttonText,
+                  {color: state.rooms === 1 ? MainColor : StrokeColor},
+                ]}>
+                1
+              </Text>
             </Pressable>
-            <Pressable style={styles.roomButton}>
-              <Text style={styles.buttonText}>2</Text>
+            <Pressable
+              style={[
+                styles.roomButton,
+                {
+                  borderColor:
+                    state.rooms === 2 ? MainColor : 'rgba(112, 112, 112, 0.5)',
+                },
+              ]}
+              onPress={() => {
+                addToState('rooms', 2);
+              }}>
+              <Text
+                style={[
+                  styles.buttonText,
+                  {color: state.rooms === 2 ? MainColor : StrokeColor},
+                ]}>
+                2
+              </Text>
             </Pressable>
-            <Pressable style={styles.roomButton}>
-              <Text style={styles.buttonText}>3</Text>
+            <Pressable
+              style={[
+                styles.roomButton,
+                {
+                  borderColor:
+                    state.rooms === 3 ? MainColor : 'rgba(112, 112, 112, 0.5)',
+                },
+              ]}
+              onPress={() => {
+                addToState('rooms', 3);
+              }}>
+              <Text
+                style={[
+                  styles.buttonText,
+                  {color: state.rooms === 3 ? MainColor : StrokeColor},
+                ]}>
+                3
+              </Text>
             </Pressable>
-            <Pressable style={styles.roomButton}>
-              <Text style={styles.buttonText}>4</Text>
+            <Pressable
+              style={[
+                styles.roomButton,
+                {
+                  borderColor:
+                    state.rooms === 4 ? MainColor : 'rgba(112, 112, 112, 0.5)',
+                },
+              ]}
+              onPress={() => {
+                addToState('rooms', 4);
+              }}>
+              <Text
+                style={[
+                  styles.buttonText,
+                  {color: state.rooms === 4 ? MainColor : StrokeColor},
+                ]}>
+                4
+              </Text>
             </Pressable>
-            <Pressable style={styles.roomButton}>
-              <Text style={styles.buttonText}>+5</Text>
+            <Pressable
+              style={[
+                styles.roomButton,
+                {
+                  borderColor:
+                    state.rooms === 5 ? MainColor : 'rgba(112, 112, 112, 0.5)',
+                },
+              ]}
+              onPress={() => {
+                addToState('rooms', 5);
+              }}>
+              <Text
+                style={[
+                  styles.buttonText,
+                  {color: state.rooms === 5 ? MainColor : StrokeColor},
+                ]}>
+                +5
+              </Text>
             </Pressable>
           </InputWrapper>
           <Seprator />
@@ -431,6 +617,8 @@ export const AccountInfoStep: React.FC<IProps> = (props) => {
             <TextInput
               placeholder=" اجاره ویلایی 2 خوابه"
               style={{backgroundColor: '#fff', paddingHorizontal: 22}}
+              onChangeText={(text) => addToState('name', text)}
+              value={state?.name}
             />
           </InputWrapper>
           <Seprator />
@@ -446,6 +634,8 @@ export const AccountInfoStep: React.FC<IProps> = (props) => {
               multiline={true}
               numberOfLines={4}
               placeholder="در این بخش کاربر می تواند  تمامی توضیحات تکمیلی را وارد نمایید"
+              onChangeText={(text) => addToState('desc', text)}
+              value={state?.desc}
             />
           </InputWrapper>
           <Seprator />

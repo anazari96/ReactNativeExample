@@ -1,9 +1,11 @@
+/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {StyleSheet, View, Text, Dimensions} from 'react-native';
+import {StyleSheet, View, Text, Dimensions, Pressable} from 'react-native';
 import {persianNumber} from '../../utils/persianNumber';
 
 interface IProps {
   step: number;
+  setStep: Function;
 }
 
 const styles = StyleSheet.create({
@@ -66,7 +68,12 @@ export const CreateAdProgress: React.FC<IProps> = (props) => {
     <View style={styles.container}>
       <View style={styles.ballWrapper}>
         <View style={[styles.ball, {backgroundColor: '#01babc'}]}>
-          <Text style={styles.ballText}>{persianNumber('1')}</Text>
+          <Pressable
+            onPress={() => {
+              props.setStep(1);
+            }}>
+            <Text style={styles.ballText}>{persianNumber('1')}</Text>
+          </Pressable>
         </View>
         <View
           style={[
@@ -79,7 +86,12 @@ export const CreateAdProgress: React.FC<IProps> = (props) => {
             styles.ball,
             {backgroundColor: props.step >= 2 ? '#01babc' : '#fff'},
           ]}>
-          <Text style={styles.ballText}>{persianNumber('2')}</Text>
+          <Pressable
+            onPress={() => {
+              props.setStep(2);
+            }}>
+            <Text style={styles.ballText}>{persianNumber('2')}</Text>
+          </Pressable>
         </View>
         <View
           style={[
@@ -92,64 +104,84 @@ export const CreateAdProgress: React.FC<IProps> = (props) => {
             styles.ball,
             {backgroundColor: props.step >= 3 ? '#01babc' : '#fff'},
           ]}>
-          <Text style={styles.ballText}>{persianNumber('3')}</Text>
+          <Pressable
+            onPress={() => {
+              props.setStep(3);
+            }}>
+            <Text style={styles.ballText}>{persianNumber('3')}</Text>
+          </Pressable>
         </View>
       </View>
       <View style={styles.descWrapper}>
-        <Text
-          style={[
-            styles.descText,
-            {
-              color: '#01babc',
-              textShadowColor: '#01babc',
-              textShadowOffset: {
-                width: 0,
-                height: 3,
+        <Pressable
+          onPress={() => {
+            props.setStep(1);
+          }}>
+          <Text
+            style={[
+              styles.descText,
+              {
+                color: '#01babc',
+                textShadowColor: '#01babc',
+                textShadowOffset: {
+                  width: 0,
+                  height: 3,
+                },
+                textShadowRadius: 6,
               },
-              textShadowRadius: 6,
-            },
-          ]}>
-          اطلاعات ملک
-        </Text>
-        <Text
-          style={[
-            styles.descText,
-            props.step >= 2
-              ? {
-                  color: '#01babc',
-                  textShadowColor: '#01babc',
-                  textShadowOffset: {
-                    width: 0,
-                    height: 3,
+            ]}>
+            اطلاعات ملک
+          </Text>
+        </Pressable>
+        <Pressable
+          onPress={() => {
+            props.setStep(2);
+          }}>
+          <Text
+            style={[
+              styles.descText,
+              props.step >= 2
+                ? {
+                    color: '#01babc',
+                    textShadowColor: '#01babc',
+                    textShadowOffset: {
+                      width: 0,
+                      height: 3,
+                    },
+                    textShadowRadius: 6,
+                  }
+                : {
+                    color: '#fff',
                   },
-                  textShadowRadius: 6,
-                }
-              : {
-                  color: '#fff',
-                },
-          ]}>
-          اطلاعات کاربری
-        </Text>
-        <Text
-          style={[
-            styles.descText,
-            props.step >= 3
-              ? {
-                  color: '#01babc',
-                  textShadowColor: '#01babc',
-                  textShadowOffset: {
-                    width: 0,
-                    height: 3,
+            ]}>
+            اطلاعات کاربری
+          </Text>
+        </Pressable>
+        <Pressable
+          onPress={() => {
+            props.setStep(3);
+          }}>
+          <Text
+            style={[
+              styles.descText,
+              props.step >= 3
+                ? {
+                    color: '#01babc',
+                    textShadowColor: '#01babc',
+                    textShadowOffset: {
+                      width: 0,
+                      height: 3,
+                    },
+                    textShadowRadius: 6,
+                  }
+                : {
+                    color: '#fff',
                   },
-                  textShadowRadius: 6,
-                }
-              : {
-                  color: '#fff',
-                },
-            ,
-          ]}>
-          اطلاعات نهایی
-        </Text>
+              ,
+            ]}>
+            اطلاعات نهایی
+          </Text>
+        </Pressable>
       </View>
     </View>
   );

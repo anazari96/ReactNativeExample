@@ -15,6 +15,7 @@ import FeedScreen from 'screens/FeedScreen';
 import ExploreScreen from 'screens/ExploreScreen';
 import MyAdsScreen from 'screens/MyAdsScreen';
 import CreateAdsScreen from 'screens/CreateAdsScreen';
+import LoginScreen from 'screens/LoginScreen';
 
 import FolderSVG from 'assets/icons/folder.svg';
 import PinSVG from 'assets/icons/pin.svg';
@@ -31,7 +32,7 @@ const Tab = createBottomTabNavigator();
 function MainTabScreen() {
   return (
     <Tab.Navigator
-      initialRouteName="CreateAds"
+      // initialRouteName="CreateAds"
       screenOptions={({route}) => ({
         tabBarIcon: ({focused}) => {
           switch (route.name) {
@@ -144,6 +145,7 @@ export default function App() {
         <NavigationContainer>
           <RootStack.Navigator
             mode="modal"
+            initialRouteName="Login"
             screenOptions={{
               gestureEnabled: true,
               gestureDirection: 'vertical',
@@ -151,6 +153,11 @@ export default function App() {
             <RootStack.Screen
               name="Main"
               component={MainTabScreen}
+              options={{headerShown: false}}
+            />
+            <RootStack.Screen
+              name="Login"
+              component={LoginScreen}
               options={{headerShown: false}}
             />
             <RootStack.Screen

@@ -31,9 +31,9 @@ export const HouseInfoStep: React.FC<IProps> = (props) => {
   const {addToState, removeListToState, state} = props;
 
   const [steps, setSteps] = useState<1 | 2 | 'map'>(1);
-  const [neighboursOptions, setNeighboursOptions] = useState<
-    any[] | undefined
-  >();
+  const [neighboursOptions, setNeighboursOptions] = useState<any[] | undefined>(
+    [{title: 'انتخاب محله '}, {title: 'هاشمیه', key: 1}],
+  );
 
   useEffect(() => {
     api
@@ -119,12 +119,12 @@ export const HouseInfoStep: React.FC<IProps> = (props) => {
                 </InputWrapper>
                 <InputWrapper title="انتخاب منطقه و محله" required={true}>
                   <Picker
-                    enabled={!neighboursOptions}
+                    enabled={!!neighboursOptions}
                     style={styles.picker}
                     selectedValue={state.distinct}
                     onValueChange={(text) => addToState('distinct', text)}>
                     {neighboursOptions?.map((v) => (
-                      <Picker.Item label={v.title} value={v.key} />
+                      <Picker.Item label={v.title} value={v.key} key={v.key} />
                     ))}
                   </Picker>
                 </InputWrapper>
@@ -300,7 +300,9 @@ export const HouseInfoStep: React.FC<IProps> = (props) => {
                           style={[styles.textInput, styles.borderShadowStyle]}
                           placeholder="۱/۰۰۰/۰۰۰"
                           value={state?.price2}
-                          onChangeText={(text) => addToState('price2', text)}
+                          onChangeText={(text) =>
+                            addToState('price2', parseInt(text))
+                          }
                         />
                         <Pressable
                           style={[
@@ -337,7 +339,9 @@ export const HouseInfoStep: React.FC<IProps> = (props) => {
                       style={[styles.textInput, styles.borderShadowStyle]}
                       placeholder="۱۵۰"
                       value={state?.area}
-                      onChangeText={(text) => addToState('area', text)}
+                      onChangeText={(text) =>
+                        addToState('area', parseInt(text))
+                      }
                     />
                   </InputWrapper>
                 </View>
@@ -358,7 +362,7 @@ export const HouseInfoStep: React.FC<IProps> = (props) => {
                       style={[styles.textInput, styles.borderShadowStyle]}
                       placeholder="۱۰"
                       value={state?.age}
-                      onChangeText={(text) => addToState('age', text)}
+                      onChangeText={(text) => addToState('age', parseInt(text))}
                     />
                     <Pressable
                       style={[

@@ -7,6 +7,7 @@ import {
   Text,
   Pressable,
   TextInput,
+  ActivityIndicator,
 } from 'react-native';
 
 import WarningSVG from 'assets/icons/warning.svg';
@@ -18,13 +19,15 @@ import {useNavigation} from '@react-navigation/native';
 
 interface IProps {
   state: any;
+  loading?: boolean;
   nextStep: (v: IAds) => void;
   addToState: (key: string, value: any) => void;
   removeToState: (key: string) => void;
 }
 
 export const FinalInfoStep: React.FC<IProps> = (props) => {
-  const navigation = useNavigation();
+  const {addToState, state} = props;
+
   return (
     <>
       <ScrollView>
@@ -62,6 +65,8 @@ export const FinalInfoStep: React.FC<IProps> = (props) => {
                 paddingHorizontal: 14,
               }}
               placeholder="09*********"
+              onChangeText={(text) => addToState('user.phone', text)}
+              value={state?.user?.phone}
             />
           </InputWrapper>
           <InputWrapper
@@ -83,6 +88,8 @@ export const FinalInfoStep: React.FC<IProps> = (props) => {
                 paddingHorizontal: 14,
               }}
               placeholder="051********"
+              onChangeText={(text) => addToState('user.phone2', text)}
+              value={state?.user?.phone2}
             />
           </InputWrapper>
           <Seprator />
@@ -116,9 +123,27 @@ export const FinalInfoStep: React.FC<IProps> = (props) => {
                   justifyContent: 'space-between',
                   flexDirection: 'row',
                 }}>
-                <TextInput style={styles.clockTextinput} />
+                <TextInput
+                  style={styles.clockTextinput}
+                  onChangeText={(text) =>
+                    addToState('visit_time.start', {
+                      ...state?.visit_time?.start,
+                      from: text,
+                    })
+                  }
+                  value={state?.visit_time?.start?.from}
+                />
                 <Text>تا</Text>
-                <TextInput style={styles.clockTextinput} />
+                <TextInput
+                  style={styles.clockTextinput}
+                  onChangeText={(text) =>
+                    addToState('visit_time.start', {
+                      ...state?.visit_time?.start,
+                      to: text,
+                    })
+                  }
+                  value={state?.visit_time?.start?.to}
+                />
               </View>
             </View>
             <View
@@ -146,9 +171,27 @@ export const FinalInfoStep: React.FC<IProps> = (props) => {
                   justifyContent: 'space-between',
                   flexDirection: 'row',
                 }}>
-                <TextInput style={styles.clockTextinput} />
+                <TextInput
+                  style={styles.clockTextinput}
+                  onChangeText={(text) =>
+                    addToState('visit_time.end', {
+                      ...state?.visit_time?.end,
+                      from: text,
+                    })
+                  }
+                  value={state?.visit_time?.end?.from}
+                />
                 <Text>تا</Text>
-                <TextInput style={styles.clockTextinput} />
+                <TextInput
+                  style={styles.clockTextinput}
+                  onChangeText={(text) =>
+                    addToState('visit_time.end', {
+                      ...state?.visit_time?.end,
+                      to: text,
+                    })
+                  }
+                  value={state?.visit_time?.end?.to}
+                />
               </View>
             </View>
           </InputWrapper>
@@ -189,12 +232,19 @@ export const FinalInfoStep: React.FC<IProps> = (props) => {
       </ScrollView>
       <View style={styles.submitWrapper}>
         <Pressable
-          style={styles.submitBtn}
+          style={[styles.submitBtn, props.loading ? {opacity: 0.6} : undefined]}
+          disabled={props.loading}
           onPress={() => {
             props.nextStep({} as IAds);
-            navigation.navigate('Feed');
           }}>
-          <Text style={styles.submitText}>ادامه</Text>
+          {props.loading ? (
+            <ActivityIndicator
+              animating={true}
+              color={'#FFF'}
+              style={{marginHorizontal: 10}}
+            />
+          ) : null}
+          <Text style={styles.submitText}>ثبت</Text>
         </Pressable>
       </View>
     </>
@@ -245,6 +295,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
 
     display: 'flex',
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },
