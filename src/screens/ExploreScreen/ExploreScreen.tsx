@@ -19,6 +19,7 @@ import {IAds} from '../../models/GeneralModels';
 import {AdCard} from '../../components/AdCard/AdCard';
 import {MapView} from '../../components/MapView/MapView';
 import {Category} from '../../components/Category/Category';
+import {CommingSoon} from 'components/CommingSoon/CommingSoon';
 
 const styles = StyleSheet.create({
   container: {
@@ -246,13 +247,14 @@ export const ExploreScreen: React.FC = (props) => {
 
   return (
     // <View style={styles.container}>
-    <TabView
-      navigationState={{index, routes}}
-      renderScene={renderScene}
-      renderTabBar={_renderTabBar}
-      onIndexChange={setIndex}
-      initialLayout={initialLayout}
-    />
+    // <TabView
+    //   navigationState={{index, routes}}
+    //   renderScene={renderScene}
+    //   renderTabBar={_renderTabBar}
+    //   onIndexChange={setIndex}
+    //   initialLayout={initialLayout}
+    // />
+    <CommingSoon />
     // </View>
   );
 };

@@ -2,13 +2,14 @@ import React, {useMemo, useRef, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {useSelector} from 'react-redux';
 import {FlatList} from 'react-native-gesture-handler';
-import {OrderedMap} from 'immutable';
+import {OrderedMap, List} from 'immutable';
 
 import AdCard from 'components/AdCard';
 import {IAds} from 'models/GeneralModels';
 
 interface IProps {
   mode: 'Card' | 'Land';
+  ads?: List<any>;
 }
 
 export const FeedAds: React.FC<IProps> = (props) => {

@@ -1,13 +1,15 @@
+import React, {useEffect, useState} from 'react';
 import 'react-native-gesture-handler';
-import * as React from 'react';
 import {Provider} from 'react-redux';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createStackNavigator} from '@react-navigation/stack';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
+import SplashScreen from 'react-native-splash-screen';
+import AsyncStorage from '@react-native-community/async-storage';
+import {store} from 'redux/store';
 // import Ionicons from 'react-native-vector-icons/Ionicons';
 // import Svg, {Use, Image} from 'react-native-svg';
-import {store} from 'redux/store';
 import {MainColor, StrokeColor} from 'constants/variables';
 import {typography} from 'utils/typography';
 
@@ -16,13 +18,17 @@ import ExploreScreen from 'screens/ExploreScreen';
 import MyAdsScreen from 'screens/MyAdsScreen';
 import CreateAdsScreen from 'screens/CreateAdsScreen';
 import LoginScreen from 'screens/LoginScreen';
+import ModalScreen from 'screens/ModalScreen';
+import FilterScreen from 'screens/FilterScreen';
+import ServiceScreen from 'screens/ServiceScreen';
 
 import FolderSVG from 'assets/icons/folder.svg';
 import PinSVG from 'assets/icons/pin.svg';
 import LocationSVG from 'assets/icons/location.svg';
 import MenuSVG from 'assets/icons/menu.svg';
 import UserSVG from 'assets/icons/users-cog.svg';
-import ModalScreen from 'screens/ModalScreen';
+import ServiceSVG from 'assets/icons/service.svg';
+import ProfileScreen from 'screens/ProfileScreen';
 
 typography();
 
@@ -44,9 +50,9 @@ function MainTabScreen() {
                   stroke={focused ? MainColor : StrokeColor}
                 />
               );
-            case 'MyAds':
+            case 'Service':
               return (
-                <FolderSVG
+                <ServiceSVG
                   height={25}
                   fill={focused ? MainColor : undefined}
                   stroke={focused ? MainColor : StrokeColor}
@@ -115,9 +121,9 @@ function MainTabScreen() {
         component={FeedScreen}
       />
       <Tab.Screen
-        name="MyAds"
-        options={{title: 'آگهی های من'}}
-        component={MyAdsScreen}
+        name="Service"
+        options={{title: 'خدماتی'}}
+        component={ServiceScreen}
       />
       <Tab.Screen
         name="CreateAds"
@@ -132,23 +138,50 @@ function MainTabScreen() {
       <Tab.Screen
         name="Profile"
         options={{title: 'پروفایل'}}
-        component={FeedScreen}
+        component={ProfileScreen}
       />
     </Tab.Navigator>
   );
 }
 
 export default function App() {
-  return (
+  const [initalRoute, setInitalRoute] = useState<string | undefined>();
+
+  useEffect(() => {
+    SplashScreen.hide();
+  }, [initalRoute]);
+
+  useEffect(() => {
+    async function fetchStorage() {
+      try {
+        const value = await AsyncStorage.getItem('@token');
+        if (value !== null) {
+          console.log('value', value);
+          setInitalRoute('Main');
+          return;
+        }
+      } catch (err) {
+        console.log('err', err);
+      }
+      setInitalRoute('Login');
+    }
+
+    if (!initalRoute) {
+      fetchStorage();
+    }
+  }, [initalRoute]);
+
+  return initalRoute ? (
     <Provider store={store}>
       <SafeAreaProvider>
         <NavigationContainer>
           <RootStack.Navigator
             mode="modal"
-            initialRouteName="Login"
+            initialRouteName={initalRoute}
             screenOptions={{
               gestureEnabled: true,
               gestureDirection: 'vertical',
+              cardStyle: {backgroundColor: 'transparent'},
             }}>
             <RootStack.Screen
               name="Main"
@@ -158,6 +191,11 @@ export default function App() {
             <RootStack.Screen
               name="Login"
               component={LoginScreen}
+              options={{headerShown: false}}
+            />
+            <RootStack.Screen
+              name="Filter"
+              component={FilterScreen}
               options={{headerShown: false}}
             />
             <RootStack.Screen
@@ -173,5 +211,5 @@ export default function App() {
         </NavigationContainer>
       </SafeAreaProvider>
     </Provider>
-  );
+  ) : null;
 }

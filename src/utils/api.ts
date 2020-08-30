@@ -1,7 +1,16 @@
 import {create} from 'apisauce';
 import {BASE_URL} from '../constants/variables';
+import AsyncStorage from '@react-native-community/async-storage';
 
-export const api = create({
+const api = create({
   baseURL: BASE_URL,
-  headers: {Authorization: 'Token aa8a1a7329e2381787a42736d2be8904cf5f4a4b'},
 });
+
+api.addAsyncRequestTransform((request) => async () => {
+  const token = await AsyncStorage.getItem('@token');
+  if (token) {
+    request.headers['Authorization'] = `Token ${token}`;
+  }
+});
+
+export {api};

@@ -5,6 +5,7 @@ import Swiper from 'react-native-swiper';
 import FastImage from 'react-native-fast-image';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {useNavigation} from '@react-navigation/native';
+import StarRating from 'react-native-star-rating';
 
 import {IAds} from 'models/GeneralModels';
 import {MainColor} from 'constants/variables';
@@ -105,9 +106,29 @@ export const AdCard: React.FC<
                       <BookmarkSVG fill="rgba(0, 0, 0, 0.2)" stroke="#fff" />
                     </TouchableOpacity>
                   </View>
-                  <View style={styles.starStyle}>
-                    <StarSVG fill="#ffff00" />
-                  </View>
+                  {props.type === 'Card' ? (
+                    <View style={styles.starStyle}>
+                      <StarSVG fill="#ffff00" />
+                    </View>
+                  ) : (
+                    <View
+                      style={{
+                        position: 'absolute',
+                        bottom: 8,
+                        left: 10,
+                        zIndex: 100,
+                      }}>
+                      <StarRating
+                        containerStyle={{width: '35%'}}
+                        starSize={10}
+                        disabled={true}
+                        maxStars={5}
+                        rating={props.stars}
+                        fullStarColor={MainColor}
+                        emptyStarColor={'transparent'}
+                      />
+                    </View>
+                  )}
                   <FastImage
                     style={styles.imageStyle}
                     source={{uri: v}}
@@ -218,6 +239,7 @@ const stylesFunc = (mode: 'Card' | 'Land') =>
     container:
       mode === 'Card'
         ? {
+            elevation: 10,
             backgroundColor: '#fff',
             width: 237,
             height: 280,
@@ -227,6 +249,7 @@ const stylesFunc = (mode: 'Card' | 'Land') =>
             borderRadius: 7,
           }
         : {
+            elevation: 10,
             backgroundColor: '#fff',
             width: '100%',
             height: 140,
@@ -260,11 +283,11 @@ const stylesFunc = (mode: 'Card' | 'Land') =>
       // flexDirection: 'row-reverse',
     },
     bookmarkStyle:
-      mode === 'Card'
+      mode === 'Land'
         ? {position: 'absolute', top: 0, right: 18, zIndex: 100}
         : {position: 'absolute', top: 0, left: 18, zIndex: 100},
     starStyle:
-      mode === 'Card'
+      mode === 'Land'
         ? {position: 'absolute', top: 0, left: 18, zIndex: 100}
         : {position: 'absolute', top: 0, right: 18, zIndex: 100},
   });

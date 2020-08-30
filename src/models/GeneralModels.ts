@@ -26,6 +26,7 @@ export interface IAds {
   rooms: number;
   isBookmarked: boolean;
   isStared: boolean;
+  stars: number;
   created: Date;
   neighbourhood: string;
   options: any;

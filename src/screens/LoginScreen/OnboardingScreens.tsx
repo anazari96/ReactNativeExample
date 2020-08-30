@@ -1,32 +1,34 @@
 import React, {useState, useMemo, useCallback} from 'react';
 import {StyleSheet, View, Pressable, Text} from 'react-native';
+import Onboarding from 'react-native-onboarding-swiper';
 
 import {MainColor, StrokeColor} from 'constants/variables';
 
 import MenuSVG from 'assets/images/menu.svg';
 import LocationSVG from 'assets/images/location.svg';
 import SurfaceSVG from 'assets/images/surface.svg';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const datas = [
   {
-    source: MenuSVG,
-    index: 1,
+    image: <MenuSVG />,
+    backgroundColor: '#fff',
     title: 'ثبت رایگان آگهی ملک',
-    desc:
+    subtitle:
       'کاربر گرامی شما می توانید به صورت رایگان و تعداد نامحدود ملک های خود را در ملکوپین آگهی کنید',
   },
   {
-    source: LocationSVG,
-    index: 2,
+    image: <LocationSVG />,
+    backgroundColor: '#fff',
     title: 'معرفی مشاغل و ویژگی های آنها',
-    desc:
+    subtitle:
       'کاربر گرامی شما می توانید با ورود به این بخش تمام مشاغل فعال اطراف خود و سطح شهر را بشناسید و از ویژگی های آن استفاده کنید',
   },
   {
-    source: SurfaceSVG,
-    index: 3,
+    image: <SurfaceSVG />,
+    backgroundColor: '#fff',
     title: 'بخش خدماتی و معرفی افراد با تخصص',
-    desc:
+    subtitle:
       'کاربر گرامی شما می توانید با ورود به این بخش با افراد فنی و نیروی های خدماتی آشنا شوید و نیاز خود را بر طرف کنید ',
   },
 ];
@@ -34,99 +36,41 @@ const datas = [
 export const OnboardingScreens: React.FC<{nextStep: Function}> = ({
   nextStep,
 }) => {
-  const [step, setStep] = useState(1);
+  // const renderedScreen = useMemo(() => {}, [nextStep]);
 
-  const sharedComponent = useCallback(
-    (v) => {
-      return (
-        <View style={styles.container}>
-          <View
-            style={{
-              width: '100%',
-              height: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: 20,
-            }}>
-            {<v.source />}
-          </View>
-          <View
-            style={{
-              paddingHorizontal: 14,
-              // marginTop: 28,
-              // marginBottom: 45,
-              width: '100%',
-            }}>
-            <Text
-              style={{
-                width: '100%',
-                fontSize: 21,
-                lineHeight: 46,
-                color: MainColor,
-                textAlign: 'left',
-              }}>
-              <Text style={{color: StrokeColor}}>{`${v.index}_`}</Text>
-              {v.title}
-            </Text>
-          </View>
-          <View style={{paddingHorizontal: 14}}>
-            <Text
-              style={{
-                fontSize: 13,
-                lineHeight: 33,
-                textAlign: 'left',
-                color: '#000',
-              }}>
-              {v.desc}
-            </Text>
-          </View>
-          <View
-            style={{
-              display: 'flex',
-              alignItems: 'flex-end',
-              justifyContent: 'center',
-              width: '100%',
-              paddingHorizontal: 20,
-            }}>
-            <Pressable
-              style={{
-                width: 140,
-                height: 45,
-                backgroundColor: MainColor,
-                borderRadius: 5,
-              }}
-              onPress={() => {
-                setStep(step + 1);
-              }}>
-              <Text
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  textAlign: 'center',
-                  textAlignVertical: 'center',
-                  fontSize: 20,
-                  lineHeight: 44,
-                  color: '#fff',
-                }}>
-                بعدی
-              </Text>
-            </Pressable>
-          </View>
-        </View>
-      );
-    },
-    [step],
-  );
-
-  const renderedScreen = useMemo(() => {
-    if (step <= 3) {
-      return sharedComponent(datas[step - 1]);
-    }
+  const saveOnboardingAndNextStep = useCallback(async () => {
+    await AsyncStorage.setItem('@onboarding', 'v1');
     nextStep();
-  }, [step, sharedComponent, nextStep]);
+  }, [nextStep]);
 
-  return <>{renderedScreen}</>;
+  return (
+    <>
+      <Onboarding
+        onDone={saveOnboardingAndNextStep}
+        onSkip={saveOnboardingAndNextStep}
+        pages={datas}
+        skipLabel={'رد کردن'}
+        nextLabel={'بعدی'}
+        // showDone={false}
+        // showSkip={false}
+        // showNext={false}
+        // showPagination={false}
+        // containerStyles={{width: 100, height: '100%'}}
+        titleStyles={{
+          fontSize: 21,
+          lineHeight: 46,
+          color: MainColor,
+          textAlign: 'left',
+        }}
+        subTitleStyles={{
+          fontSize: 13,
+          lineHeight: 33,
+          color: '#000',
+          textAlign: 'left',
+        }}
+      />
+    </>
+  );
 };
 
 const styles = StyleSheet.create({

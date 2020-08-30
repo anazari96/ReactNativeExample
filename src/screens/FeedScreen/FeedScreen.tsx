@@ -1,28 +1,90 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState, useEffect} from 'react';
-import {View, StyleSheet, ScrollView} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {TextInput} from 'react-native-gesture-handler';
-import {Picker} from '@react-native-community/picker';
+import Geolocation from 'react-native-geolocation-service';
+import {
+  checkMultiple,
+  PERMISSIONS,
+  requestMultiple,
+} from 'react-native-permissions';
+import {Region} from 'react-native-maps';
 
-import {FeedAds} from 'containers/FeedAds/FeedAds';
 import {getFeedAction} from 'redux/actions/feedAction';
-import {MainColor} from 'constants/variables';
+import FilterScreen from 'screens/FilterScreen';
+import FilterComponent from 'components/FilterComponent';
 
 interface IProps {}
 
 export const FeedScreen: React.FC<IProps> = (props) => {
-  const [kindOfAd, setKindOfAd] = useState<'sell' | 'rent' | undefined>();
-  const [cost, setCost] = useState();
-  const [kind, setKind] = useState();
-  const [area, setArea] = useState();
-  const [more, setMore] = useState();
+  const [myLoc, setMyLoc] = useState<Region | undefined>();
   const dispatch = useDispatch();
+
+  const [filter, setFilter] = useState<any>();
 
   useEffect(() => {
     dispatch(getFeedAction());
   }, [dispatch]);
+
+  useEffect(() => {
+    checkMultiple([
+      PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
+      PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION,
+    ])
+      .then((v) => {
+        let requests: any[] = [];
+        if (v['android.permission.ACCESS_COARSE_LOCATION'] === 'denied') {
+          requests.push(PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION);
+        }
+        if (v['android.permission.ACCESS_FINE_LOCATION'] === 'denied') {
+          requests.push(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
+        }
+        if (requests.length > 0) {
+          requestMultiple([
+            PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
+            PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION,
+          ])
+            .then((statuses) => {
+              console.log(
+                'ACCESS_FINE_LOCATION',
+                statuses[PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION],
+              );
+              console.log(
+                'ACCESS_COARSE_LOCATION',
+                statuses[PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION],
+              );
+            })
+            .catch((err) => {
+              console.log('err request', err);
+            });
+        }
+      })
+      .catch((err) => {
+        console.log('err check', err);
+      })
+      .finally(() => {
+        Geolocation.getCurrentPosition(
+          (position) => {
+            setMyLoc({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+              latitudeDelta: 0.025,
+              longitudeDelta: 0.0321,
+            });
+          },
+          (error) => {
+            // See error code charts below.
+            console.log(error.code, error.message);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 10000,
+            forceRequestLocation: true,
+          },
+        );
+      });
+  }, []);
 
   return (
     <SafeAreaView
@@ -32,166 +94,8 @@ export const FeedScreen: React.FC<IProps> = (props) => {
         alignItems: 'center',
         backgroundColor: '#f6f6f6',
       }}>
-      <View
-        style={{
-          height: 70,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexDirection: 'column',
-          paddingHorizontal: 6,
-        }}>
-        {/* first row of filters */}
-        <View style={{flexDirection: 'row', height: 28, marginBottom: 5}}>
-          {/* kind of ad: sell or rent */}
-          <View
-            style={[
-              styles.pickerWrapper,
-              {flex: undefined},
-              kindOfAd ? {backgroundColor: MainColor} : undefined,
-            ]}>
-            <Picker
-              selectedValue={kindOfAd}
-              style={[styles.picker, styles.firstPicker]}
-              onValueChange={(itemValue) => setKindOfAd(itemValue as 'sell')}>
-              <Picker.Item label="فروش" value="sell" />
-              <Picker.Item label="اجاره و رهن" value="rent" />
-            </Picker>
-          </View>
-          {/* Search */}
-          <TextInput
-            placeholder="جستجو"
-            style={{
-              flex: 1,
-              width: '100%',
-              height: '100%',
-              backgroundColor: '#fff',
-              color: '#707070',
-              borderRadius: 5,
-              // textAlign: 'center',
-              textAlignVertical: 'center',
-              fontSize: 15,
-              padding: 0,
-              paddingLeft: 5,
-            }}
-          />
-        </View>
-        <View style={{flexDirection: 'row-reverse', height: 28}}>
-          {/* Price */}
-          <View
-            style={[
-              styles.pickerWrapper,
-              cost ? {backgroundColor: MainColor} : undefined,
-            ]}>
-            <Picker
-              selectedValue={cost}
-              style={[styles.picker]}
-              onValueChange={(itemValue) => setCost(itemValue)}>
-              <Picker.Item label="قیمت" value="sell" />
-              <Picker.Item label="" value="rent" />
-            </Picker>
-          </View>
-
-          {/* kind of house */}
-          <View
-            style={[
-              styles.pickerWrapper,
-              kind ? {backgroundColor: MainColor} : undefined,
-            ]}>
-            <Picker
-              selectedValue={kind}
-              style={[styles.picker]}
-              onValueChange={(itemValue) => setKind(itemValue)}>
-              <Picker.Item label="نوع" value={''} />
-              <Picker.Item label="" value="rent" />
-            </Picker>
-          </View>
-          {/* area */}
-          <View
-            style={[
-              styles.pickerWrapper,
-              area ? {backgroundColor: MainColor} : undefined,
-            ]}>
-            <Picker
-              selectedValue={area}
-              style={[styles.picker]}
-              onValueChange={(itemValue) => setArea(itemValue)}>
-              <Picker.Item label="متراژ" value="" />
-              <Picker.Item label="" value="rent" />
-            </Picker>
-          </View>
-          {/* more */}
-          <View
-            style={[
-              styles.pickerWrapper,
-              more ? {backgroundColor: MainColor} : undefined,
-            ]}>
-            <Picker
-              selectedValue={more}
-              style={[styles.picker]}
-              onValueChange={(itemValue) => setMore(itemValue)}
-              itemStyle={{
-                alignItems: 'center',
-                textAlign: 'center',
-                display: 'flex',
-                justifyContent: 'center',
-                fontSize: 50,
-                fontWeight: '700',
-              }}>
-              <Picker.Item label="بیشتر" value="" />
-              <Picker.Item label="" value="rent" />
-            </Picker>
-          </View>
-        </View>
-      </View>
-
-      <ScrollView style={{width: '100%'}}>
-        <FeedAds mode="Card" />
-        <FeedAds mode="Land" />
-      </ScrollView>
+      <FilterComponent setFilter={setFilter} />
+      <FilterScreen filter={filter} />
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  pickerWrapper: {
-    height: '100%',
-    flex: 1,
-
-    backgroundColor: '#ffffff',
-    textAlign: 'center',
-    textAlignVertical: 'center',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: 5,
-
-    borderRadius: 5,
-
-    // shadowOffset: {width: 10, height: 30},
-    // shadowColor: '#000',
-    // shadowOpacity: 0.5,
-    // shadowRadius: 0.7,
-  },
-  picker: {
-    width: '100%',
-    // width: '100%',
-    // marginRight: 6,
-    // marginLeft: 5,
-    flex: 1,
-    shadowColor: 'rgba(0, 0, 0, 0.5)',
-    shadowOffset: {width: 1, height: 0},
-    shadowOpacity: 2,
-    shadowRadius: 0,
-    borderStyle: 'solid',
-    borderWidth: 0.5,
-    borderColor: 'rgba(112, 112, 112, 0.2)',
-    padding: 0,
-    margin: 0,
-    fontSize: 12,
-  },
-  firstPicker: {
-    width: 108,
-    flex: undefined,
-  },
-});

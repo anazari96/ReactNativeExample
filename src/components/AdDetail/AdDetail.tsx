@@ -3,18 +3,20 @@ import React, {useEffect, useState, useCallback} from 'react';
 import {View, StyleSheet, Pressable, Text, ScrollView} from 'react-native';
 import Swiper from 'react-native-swiper';
 import FastImage from 'react-native-fast-image';
-import {IAds} from 'models/GeneralModels';
+import Share from 'react-native-share';
 
+import {IAds} from 'models/GeneralModels';
 import {StrokeColor, borderShadowStyle, MainColor} from 'constants/variables';
 import {Seprator} from 'components/Seprator/Seprator';
 import {api} from 'utils/api';
 import {persianDate} from 'utils/persianDate';
+import {persianNumber} from 'utils/persianNumber';
+
 import BookmarkSVG from 'assets/icons/bookmark.svg';
 import StarSVG from 'assets/icons/star.svg';
 import ShareSVG from 'assets/icons/share.svg';
 import ArchitectureSVG from 'assets/icons/architecture.svg';
 import HomeSVG from 'assets/icons/home.svg';
-import {persianNumber} from 'utils/persianNumber';
 
 interface IProps {
   id: string;
@@ -63,6 +65,8 @@ export const AdDetail: React.FC<IProps> = (props) => {
     distinct: 'هاشمیه',
   });
 
+  const [bookmarked, setBookmarked] = useState<boolean>(false);
+
   useEffect(() => {
     // api
     //   .get(`/posts/${props.id}`)
@@ -91,12 +95,15 @@ export const AdDetail: React.FC<IProps> = (props) => {
 
   return ad ? (
     <>
-      <View style={{flex: 1, backgroundColor: '#f6f6f6'}}></View>
+      <View style={{flex: 1}}></View>
       <View
         style={{
           position: 'relative',
           width: '100%',
           backgroundColor: '#f6f6f6',
+          paddingTop: 20,
+          borderTopRightRadius: 20,
+          borderTopLeftRadius: 20,
         }}>
         <ScrollView>
           <View style={styles.container}>
@@ -148,10 +155,26 @@ export const AdDetail: React.FC<IProps> = (props) => {
               </View>
               <View style={styles.shortInfoSocial}>
                 <View style={{marginHorizontal: 7.5}}>
-                  <ShareSVG />
+                  <ShareSVG
+                    onPress={() => {
+                      Share.open(options)
+                        .then((res) => {
+                          console.log(res);
+                        })
+                        .catch((err) => {
+                          err && console.log(err);
+                        });
+                    }}
+                  />
                 </View>
                 <View style={{marginHorizontal: 7.5}}>
-                  <BookmarkSVG fill="#fff" stroke="rgba(0, 0, 0, 0.2)" />
+                  <BookmarkSVG
+                    fill={bookmarked ? MainColor : '#fff'}
+                    stroke={bookmarked ? MainColor : '#707070'}
+                    onPress={() => {
+                      setBookmarked(!bookmarked);
+                    }}
+                  />
                 </View>
               </View>
             </View>

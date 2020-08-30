@@ -1,47 +1,92 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState, useMemo, useCallback, useEffect, useRef} from 'react';
-import {StyleSheet, View, Text, TextInput, Pressable} from 'react-native';
+import React, {useState, useMemo, useCallback, useEffect} from 'react';
+import {
+  StyleSheet,
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  ActivityIndicator,
+} from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
+import {useNavigation} from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
+import OTPInputView from '@twotalltotems/react-native-otp-input';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import {Seprator} from 'components/Seprator/Seprator';
 import {MainColor, StrokeColor} from 'constants/variables';
 import {OnboardingScreens} from './OnboardingScreens';
+import {api} from 'utils/api';
 
 import MelkopinImage from 'assets/images/melkopin.png';
-import {useNavigation} from '@react-navigation/native';
 
 interface IProps {}
 
 export const LoginScreen: React.FC<IProps> = (props) => {
   const navigation = useNavigation();
 
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState<number | undefined>();
   const [activeCodeBTN, setActiveCodeBTN] = useState(false);
   const [phone, setPhone] = useState<string | undefined>();
-  const [code, setCode] = useState<string | undefined>();
-  const codeInputRefs = useRef(Array(6).fill(React.createRef()));
   const [timer, setTimer] = useState<Date | undefined>();
   const [timerString, setTimerString] = useState<string | undefined>();
 
   const nextStep = useCallback(() => {
-    setStep(step + 1);
+    setStep((!!step && step + 1) || 1);
   }, [step]);
-
-  useEffect(() => {
-    setActiveCodeBTN(!!phone);
-  }, [phone]);
-
-  useEffect(() => {
-    if (code?.length === 6) {
-      console.log('done');
-      navigation.navigate('Main');
-    }
-  }, [code, navigation]);
 
   const setTimerValue = useCallback(() => {
     setTimer(new Date(new Date().getTime() + 2 * 60 * 1000));
   }, []);
+
+  const getCode = useCallback(async () => {
+    if (step !== 4) {
+      nextStep();
+    }
+    try {
+      if (phone && phone.length < 11) {
+        throw 'error phone number';
+      }
+      const resp = await api.post('/login/', {phone});
+      if (resp.ok) {
+        console.log('code: ', resp.data);
+        setTimerValue();
+        if (step !== 4) {
+          nextStep();
+        }
+      } else {
+        console.log('resp', resp);
+
+        throw resp.problem;
+      }
+    } catch (err) {
+      console.log('err', err);
+    }
+  }, [nextStep, phone, step, setTimerValue]);
+
+  const sendPhoneWithCode = useCallback(
+    async (password) => {
+      try {
+        const resp = await api.post<any>('/obtain/', {phone, password});
+        if (resp.ok) {
+          await AsyncStorage.setItem('@token', resp?.data?.token);
+          navigation.navigate('Main');
+        } else {
+          console.log('resp', resp);
+
+          throw resp.problem;
+        }
+      } catch (err) {
+        console.log('err', err);
+      }
+    },
+    [phone, navigation],
+  );
+
+  useEffect(() => {
+    setActiveCodeBTN(!!phone && phone.length >= 11);
+  }, [phone]);
 
   useEffect(() => {
     if (!timer) {
@@ -70,43 +115,23 @@ export const LoginScreen: React.FC<IProps> = (props) => {
   }, [timer]);
 
   useEffect(() => {
-    if (step === 4) {
-      setTimerValue();
-    }
-  }, [setTimerValue, step]);
-
-  const setCodeChar = useCallback(
-    (index, text) => {
-      let tempCode = '';
-      for (let i = 0; i < 6; i++) {
-        i === index ? (tempCode += text) : (tempCode += code?.[i] || '');
+    async function fetchStorage() {
+      try {
+        const value = await AsyncStorage.getItem('@onboarding');
+        if (value !== null && value === 'v1') {
+          setStep(2);
+          return;
+        }
+      } catch (err) {
+        console.log('err', err);
       }
-      setCode(tempCode);
-    },
-    [code],
-  );
+      setStep(1);
+    }
 
-  const codeInputs = useMemo(
-    () =>
-      Array.from({length: 6}, (_, index) => (
-        <TextInput
-          style={{
-            borderColor: MainColor,
-            borderWidth: 1,
-            borderRadius: 5,
-            borderBottomWidth: 4,
-            marginHorizontal: 7.5,
-            flex: 1,
-            textAlign: 'center',
-          }}
-          value={code?.charAt(index).trim()}
-          onChangeText={(text) => setCodeChar(index, !!text ? text : ' ')}
-          key={index}
-          ref={codeInputRefs.current[index]}
-        />
-      )).reverse(),
-    [code, setCodeChar],
-  );
+    if (!step) {
+      fetchStorage();
+    }
+  }, [step]);
 
   const renderedContent = useMemo(() => {
     switch (step) {
@@ -248,9 +273,7 @@ export const LoginScreen: React.FC<IProps> = (props) => {
                   ? {backgroundColor: MainColor}
                   : {backgroundColor: '#ababab'},
               ]}
-              onPress={() => {
-                nextStep();
-              }}>
+              onPress={getCode}>
               <Text
                 style={[
                   {
@@ -318,7 +341,22 @@ export const LoginScreen: React.FC<IProps> = (props) => {
                   alignItems: 'center',
                   justifyContent: 'space-between',
                 }}>
-                {codeInputs}
+                <OTPInputView
+                  style={{width: '100%', height: 40}}
+                  pinCount={4}
+                  codeInputFieldStyle={{
+                    borderColor: MainColor,
+                    borderWidth: 1,
+                    borderRadius: 5,
+                    borderBottomWidth: 4,
+                    textAlign: 'center',
+                    color: '#000',
+                  }}
+                  onCodeFilled={(code) => {
+                    console.log(`Code is ${code}, you are good to go!`);
+                    sendPhoneWithCode(code);
+                  }}
+                />
               </View>
               <View
                 style={{
@@ -351,7 +389,7 @@ export const LoginScreen: React.FC<IProps> = (props) => {
                 ) : (
                   <Pressable
                     onPress={() => {
-                      setTimerValue();
+                      getCode();
                     }}>
                     <Text
                       style={{
@@ -389,9 +427,17 @@ export const LoginScreen: React.FC<IProps> = (props) => {
           </View>
         );
       default:
-        return null;
+        return <ActivityIndicator />;
     }
-  }, [step, nextStep, activeCodeBTN, phone, codeInputs, timerString]);
+  }, [
+    step,
+    nextStep,
+    activeCodeBTN,
+    phone,
+    timerString,
+    getCode,
+    sendPhoneWithCode,
+  ]);
 
   return <>{renderedContent}</>;
 };
