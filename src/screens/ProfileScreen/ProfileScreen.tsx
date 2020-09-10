@@ -1,8 +1,9 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useMemo} from 'react';
+import React, {useMemo, memo} from 'react';
 import {ScrollView, View, Text, Switch, Pressable} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import {createStackNavigator} from '@react-navigation/stack';
 
 import {version} from '../../../package.json';
 
@@ -11,6 +12,9 @@ import {MainColor} from 'constants/variables';
 import {Seprator} from 'components/Seprator/Seprator';
 import LogoImage from 'assets/images/logo.png';
 import {useNavigation} from '@react-navigation/native';
+import EditProfile from 'components/EditProfile';
+
+const Stack = createStackNavigator();
 
 interface IProps {}
 
@@ -78,7 +82,7 @@ export const ProfileScreen: React.FC<IProps> = (props) => {
         text: 'اطلاعات من',
         component: 'chevron-left',
         onPress: () => {
-          console.log('tada');
+          navigation.navigate('EditProfile');
         },
       },
       {
@@ -98,7 +102,7 @@ export const ProfileScreen: React.FC<IProps> = (props) => {
         },
       },
     ],
-    [],
+    [navigation],
   );
 
   return (
@@ -199,3 +203,12 @@ export const ProfileScreen: React.FC<IProps> = (props) => {
     </View>
   );
 };
+
+export default memo(() => {
+  return (
+    <Stack.Navigator screenOptions={{headerShown: false}}>
+      <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+      <Stack.Screen name="EditProfile" component={EditProfile} />
+    </Stack.Navigator>
+  );
+});
