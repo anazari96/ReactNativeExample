@@ -408,14 +408,14 @@ export const AccountInfoStep: React.FC<IProps> = (props) => {
             <Pressable
               style={styles.button}
               onPress={() => {
-                addToState('account_type', 'INDUTRIAL');
+                addToState('account_type', 'INDUSTRIAL');
               }}>
               <Text
                 style={[
                   styles.buttonText,
                   {
                     color:
-                      state.account_type === 'INDUTRIAL'
+                      state.account_type === 'INDUSTRIAL'
                         ? MainColor
                         : StrokeColor,
                   },

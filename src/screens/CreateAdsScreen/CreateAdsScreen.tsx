@@ -24,7 +24,7 @@ interface FormData {
   images: string[];
   post_type: 'SELL' | 'RENT';
   property_type: 'HOUSE' | 'APARTMENT';
-  account_type: 'RESIDENTAL' | 'COMMERCIAL' | 'OFFICIAL' | 'INDUTRIAL';
+  account_type: 'RESIDENTAL' | 'COMMERCIAL' | 'OFFICIAL' | 'INDUSTRIAL';
   area: number;
   price: number;
   price2: number;
@@ -55,7 +55,7 @@ const schema = yup.object({
   account_type: yup
     .string()
     .required()
-    .equals(['RESIDENTAL', 'COMMERCIAL', 'OFFICIAL', 'INDUTRIAL']),
+    .equals(['RESIDENTAL', 'COMMERCIAL', 'OFFICIAL', 'INDUSTRIAL']),
   rooms: yup.number().min(0).required(),
   user: yup.object({
     first_name: yup.string(),

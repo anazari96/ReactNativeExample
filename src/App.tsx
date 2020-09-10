@@ -38,7 +38,7 @@ const Tab = createBottomTabNavigator();
 function MainTabScreen() {
   return (
     <Tab.Navigator
-      // initialRouteName="CreateAds"
+      // initialRouteName="Profile"
       screenOptions={({route}) => ({
         tabBarIcon: ({focused}) => {
           switch (route.name) {
