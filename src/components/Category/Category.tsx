@@ -11,34 +11,39 @@ import FastImage from 'react-native-fast-image';
 import SaleSVG from '../../assets/icons/sale.svg';
 import ForkSVG from '../../assets/icons/fork.svg';
 import {useNavigation} from '@react-navigation/native';
+import {MainColor, StrokeColor} from 'constants/variables';
 
 var {width} = Dimensions.get('window');
 
 interface IProps {
   title: string;
   color: string;
-  isOff: boolean;
+  isOff?: boolean;
+  onPress?: Function;
 }
 
 const styles = StyleSheet.create({
   container: {
-    width: 74,
-    height: 98,
+    width: 98,
+    height: 92,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#fff',
     marginVertical: 10,
+    marginHorizontal: 9,
+    elevation: 10,
+    borderRadius: 38,
   },
   iconWrapper: {
-    width: 74,
-    height: 65.7,
+    width: 50,
+    height: 32,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 30,
     position: 'relative',
   },
   textWrapper: {
-    marginTop: 11.4,
+    marginTop: 17.4,
     width: '100%',
     height: 21,
     alignItems: 'center',
@@ -59,23 +64,29 @@ const styles = StyleSheet.create({
 export const Category: React.FC<IProps> = (props) => {
   const navigation = useNavigation();
   return (
-    <View style={[styles.container, {width: `${100 / parseInt(width / 99)}%`}]}>
-      <View style={[styles.iconWrapper, {backgroundColor: props.color}]}>
-        {props.isOff && (
-          <View style={[styles.saleWrapper, {backgroundColor: props.color}]}>
-            <SaleSVG />
+    <View style={[styles.container]}>
+      <View style={[styles.iconWrapper]}>
+        {/* {props.isOff && (
+          <View style={[styles.saleWrapper]}>
+            <SaleSVG fill={MainColor} color={MainColor} />
           </View>
-        )}
+        )} */}
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate('MyModal');
+            if (props.onPress) {
+              props.onPress();
+            } else {
+              navigation.navigate('ExploreItemScreen', {props: 'job'});
+            }
           }}>
           {/* <FastImage source={{uri: }} /> */}
-          <ForkSVG />
+          <ForkSVG fill={props.color} />
         </TouchableOpacity>
       </View>
       <View style={styles.textWrapper}>
-        <Text>{props.title}</Text>
+        <Text style={{fontSize: 10, lineHeight: 20, color: StrokeColor}}>
+          {props.title}
+        </Text>
       </View>
     </View>
   );

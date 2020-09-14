@@ -23,6 +23,7 @@ interface IProps {
   zoomEnabled?: boolean;
   selectLocationEnabled?: boolean;
   selectLocation?: (v: {latitude: number; longitude: number}) => void;
+  component?: any;
 }
 
 const styles = StyleSheet.create({
@@ -159,6 +160,7 @@ export const MapView: React.FC<IProps> = (props) => {
 
       <View style={styles.previewMarkerWrapper}>
         {previewMarker && <AdCard {...previewMarker} type="Land" />}
+        {props.component || null}
       </View>
     </View>
   );

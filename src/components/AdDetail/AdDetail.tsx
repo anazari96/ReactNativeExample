@@ -30,6 +30,7 @@ export const AdDetail: React.FC<IProps> = (props) => {
     created: new Date(),
     isBookmarked: true,
     isStared: true,
+    stars: 0,
     name: 'فروش یک آپارتمان ۲۰۰ متری',
     neighbourhood: 'sadasdas',
     options: null,

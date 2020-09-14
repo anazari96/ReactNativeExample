@@ -2,6 +2,7 @@ import {StyleSheet} from 'react-native';
 
 export const MainColor = '#01babc';
 export const StrokeColor = '#707070';
+export const SecondaryMainColor = '#136768';
 
 export const BASE_URL = 'http://193.176.241.173:8081/api';
 
